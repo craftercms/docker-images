@@ -1,0 +1,387 @@
+/*
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import org.apache.commons.io.FilenameUtils
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'commons-io', name: 'commons-io', version: '2.6'
+    }
+}
+
+plugins {
+    id "de.undercouch.download" version "4.0.4"
+}
+
+project.version = project.hasProperty("tag") ? project.property("tag") : "3.1.4" // craftercms version flag
+
+ext {
+    imagesDir = "${projectDir}/images"
+    imagesBuildDir = "${buildDir}/images"
+    downloadsDir = "${buildDir}/downloads"
+
+    authoringBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-authoring-${project.version}.tar.gz"
+    authoringBundleFile = "${downloadsDir}/" + FilenameUtils.getName(authoringBundleUrl)
+    authoringBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
+
+    deliveryBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-delivery-${project.version}.tar.gz"
+    deliveryBundleFile = "${downloadsDir}/" + FilenameUtils.getName(deliveryBundleUrl)
+    deliveryBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
+
+    if (project.hasProperty("authoring.bundle")) {
+        if (project.property("authoring.bundle") ==~ /^https?:\/\/.+$/) {
+            authoringBundleUrl = project.property("authoring.bundle")
+            authoringBundleFile = "${downloadsDir}/" + FilenameUtils.getName(authoringBundleUrl)
+            authoringBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
+        } else {
+            authoringBundleUrl = ""
+            authoringBundleFile = project.property("authoring.bundle")
+
+            if (file(authoringBundleFile).directory) {
+                authoringBundleRoot = authoringBundleFile
+            } else {
+                authoringBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleFile) + "/crafter"
+            }
+        }
+    }
+
+    if (project.hasProperty("delivery.bundle")) {
+        if (project.property("delivery.bundle") ==~ /^https?:\/\/.+$/) {
+            deliveryBundleUrl = project.property("delivery.bundle")
+            deliveryBundleFile = "${downloadsDir}/" + FilenameUtils.getName(deliveryBundleUrl)
+            deliveryBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
+        } else {
+            deliveryBundleUrl = ""
+            deliveryBundleFile = project.property("delivery.bundle")
+
+            if (file(deliveryBundleFile).directory) {
+                deliveryBundleRoot = deliveryBundleFile
+            } else {
+                deliveryBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(deliveryBundleFile) + "/crafter"
+            }
+        }
+    }
+
+    defaultTomcatBinExcludes = [
+        "migration",
+        "upgrade",
+        "crafter-deployer",
+        "elasticsearch",
+        "solr",
+        "dbms",
+        "apache-tomcat/work/**",
+        "apache-tomcat/temp/**",
+        "apache-tomcat/webapps/crafter-search*",
+        "apache-tomcat/webapps/crafter-social*",
+        "apache-tomcat/webapps/crafter-profile*",
+        "apache-tomcat/webapps/ROOT",
+        "apache-tomcat/webapps/studio",
+        "**/*.pid"   
+    ]
+
+    tomcatWithCrafterSearchBinExcludes = [
+        "migration",
+        "upgrade",
+        "crafter-deployer",
+        "elasticsearch",
+        "solr",
+        "dbms",
+        "apache-tomcat/work/**",
+        "apache-tomcat/temp/**",
+        "apache-tomcat/webapps/crafter-search",
+        "apache-tomcat/webapps/crafter-social*",
+        "apache-tomcat/webapps/crafter-profile*",
+        "apache-tomcat/webapps/ROOT",
+        "apache-tomcat/webapps/studio",
+        "**/*.pid"   
+    ]
+}
+
+task downloadAuthoringBundle(type: Download) {
+    src authoringBundleUrl
+    overwrite false
+    dest authoringBundleFile 
+}
+
+task downloadDeliveryBundle(type: Download) {
+    src deliveryBundleUrl
+    overwrite false
+    dest deliveryBundleFile
+}
+
+task expandAuthoringBundle(type: Copy) {
+    mustRunAfter downloadAuthoringBundle
+    from tarTree(authoringBundleFile)
+    into "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleUrl)
+}
+
+task expandDeliveryBundle(type: Copy) {
+    mustRunAfter downloadDeliveryBundle
+    from tarTree(deliveryBundleFile)
+    into "${downloadsDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl)
+}
+
+task prepareAuthoringBundle() {
+    if (!file(authoringBundleRoot).exists()) {
+        if (authoringBundleUrl) {
+            dependsOn downloadAuthoringBundle
+            dependsOn expandAuthoringBundle            
+        } else if (file(authoringBundleFile).file) {
+            dependsOn expandAuthoringBundle
+        } else {
+            ext.authoringBundleRoot = authoringBundleFile
+        } 
+    }  
+}
+
+task prepareDeliveryBundle() {
+    if (!file(deliveryBundleRoot).exists()) {
+        if (deliveryBundleUrl) {
+            dependsOn downloadDeliveryBundle
+            dependsOn expandDeliveryBundle            
+        } else if (file(deliveryBundleFile).file) {
+            dependsOn expandDeliveryBundle
+        } else {
+            ext.deliveryBundleRoot = deliveryBundleFile
+        } 
+    }
+}
+
+task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tomcat Docker image") {
+    dependsOn prepareAuthoringBundle
+
+    def buildDir = "${imagesBuildDir}/authoring/tomcat"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/authoring/tomcat/"
+            into buildDir
+        }
+
+        copy {
+            from "${authoringBundleRoot}/bin/"
+            into "${buildDir}/bin"
+            exclude defaultTomcatBinExcludes
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/authoring_tomcat:${project.version}", buildDir
+        }
+    }
+}
+
+
+task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds the Authoring Tomcat With Solr Support Docker image") {
+    dependsOn prepareAuthoringBundle
+
+    def buildDir = "${imagesBuildDir}/authoring/tomcat_with_solr_support"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/authoring/tomcat/"
+            into buildDir
+        }
+
+        copy {
+            from "${authoringBundleRoot}/bin/"
+            into "${buildDir}/bin"
+            exclude tomcatWithCrafterSearchBinExcludes
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/authoring_tomcat_tomcat_solr_compatible:${project.version}", buildDir
+        }
+    }
+}
+
+task buildDeliveryTomcat(group: "Build", description: "Builds the Delivery Tomcat Docker image") {
+    dependsOn prepareDeliveryBundle
+
+    def buildDir = "${imagesBuildDir}/delivery/tomcat"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/delivery/tomcat/"
+            into buildDir
+        }
+
+        copy {
+            from "${deliveryBundleRoot}/bin/"
+            into "${buildDir}/bin"
+            exclude defaultTomcatBinExcludes
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/delivery_tomcat:${project.version}", buildDir
+        }
+    }
+}
+
+task buildDeliveryTomcatWithSolrSupport(group: "Build", description: "Builds the Delivery Tomcat With Solr Support Docker image") {
+    dependsOn prepareDeliveryBundle
+
+    def buildDir = "${imagesBuildDir}/delivery/tomcat_with_solr_support"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/delivery/tomcat/"
+            into buildDir
+        }
+
+        copy {
+            from "${deliveryBundleRoot}/bin/"
+            into "${buildDir}/bin"
+            exclude tomcatWithCrafterSearchBinExcludes
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/delivery_tomcat_tomcat_solr_compatible:${project.version}", buildDir
+        }
+    }
+}
+
+task buildDeployer(group: "Build", description: "Builds the Deployer Docker image") {
+    dependsOn prepareDeliveryBundle
+
+    def buildDir = "${imagesBuildDir}/deployer"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/deployer/"
+            into buildDir
+        }
+        copy {
+            from "${deliveryBundleRoot}/bin/"
+            into "${buildDir}/bin"     
+            exclude "migration"
+            exclude "upgrade"
+            exclude "apache-tomcat"
+            exclude "elasticsearch"
+            exclude "solr"
+            exclude "**/*.pid"
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/deployer:${project.version}", buildDir
+        }
+    }
+}
+
+task buildProfile(group: "Build", description: "Builds the Profile Docker image")  {
+    dependsOn buildDeliveryTomcat
+
+    def buildDir = "${imagesBuildDir}/profile"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesBuildDir}/delivery/tomcat/"
+            from "${imagesDir}/profile/"
+            into buildDir
+        }
+
+        copy {
+            from "${deliveryBundleRoot}/bin/apache-tomcat/webapps/crafter-profile.war"
+            from "${deliveryBundleRoot}/bin/apache-tomcat/webapps/crafter-profile-admin.war"
+            into "${buildDir}/bin/apache-tomcat/webapps"
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/profile:${project.version}", buildDir
+        }
+    }    
+}
+
+task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server Docker image")  {
+    def buildDir = "${imagesBuildDir}/git_ssh_server"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/git_ssh_server/"
+            into buildDir
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/git_ssh_server:${project.version}", buildDir
+        }
+    }    
+}
+
+task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker image")  {
+    def buildDir = "${imagesBuildDir}/logrotate"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/logrotate/"
+            into buildDir
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/logrotate:${project.version}", buildDir
+        }
+    }    
+}
+
+task buildMainImages(group: "Build", description: "Builds main Docker images") {
+    dependsOn buildAuthoringTomcat
+    dependsOn buildDeliveryTomcat
+    dependsOn buildDeployer
+    dependsOn buildGitSshServer
+}
+
+task buildImagesWithSolrSupport(group: "Build", description: "Builds main Docker images") {
+    dependsOn buildAuthoringTomcatWithSolrSupport
+    dependsOn buildDeliveryTomcatWithSolrSupport
+}
+
+task build(group: "Build", description: "Builds all Docker images") {
+    dependsOn buildMainImages
+    dependsOn buildImagesWithSolrSupport
+    dependsOn buildProfile
+    dependsOn buildLogrotate
+}
+
+task clean(group: "Build", description: "Deletes build folder") {
+    doLast {
+        delete buildDir
+    }
+}
