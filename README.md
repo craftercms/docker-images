@@ -39,13 +39,15 @@ Builds the Crafter CMS Docker images, including:
 
 # Example commands
 
+**NOTE:** Make sure to use bundles with Crafter Social if you're building all images or building the Profile image
+
 - Clean build dir and build all images based on the default bundles:
 ```bash
     ./gradlew clean build
 ```
 - Build images using bundles downloaded from the web and use a specific version tag:
 ```bash
-    ./gradlew build -Pauthoring.bundle=https://downloads.craftercms.org/3.1.4/crafter-cms-authoring-3.1.4.tar.gz -Pdelivery.bundle=https://downloads.craftercms.org/3.1.4/crafter-cms-authoring-3.1.4.tar.gz -Ptag=3.1.4 
+    ./gradlew build -Pauthoring.bundle=https://downloads.craftercms.org/3.1.4/social/crafter-cms-authoring-3.1.4.tar.gz -Pdelivery.bundle=https://downloads.craftercms.org/3.1.4/social/crafter-cms-authoring-3.1.4.tar.gz -Ptag=3.1.4 
 ```
 - Build images using bundles tars built locally:
 ```bash
