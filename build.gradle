@@ -128,13 +128,13 @@ task downloadDeliveryBundle(type: Download) {
 task expandAuthoringBundle(type: Copy) {
     mustRunAfter downloadAuthoringBundle
     from tarTree(authoringBundleFile)
-    into "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleUrl)
+    into "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleFile)
 }
 
 task expandDeliveryBundle(type: Copy) {
     mustRunAfter downloadDeliveryBundle
     from tarTree(deliveryBundleFile)
-    into "${downloadsDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl)
+    into "${downloadsDir}/" + FilenameUtils.getBaseName(deliveryBundleFile)
 }
 
 task prepareAuthoringBundle() {
@@ -211,7 +211,7 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/authoring_tomcat_tomcat_solr_compatible:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "craftercms/authoring_tomcat_solr_compatible:${project.version}", buildDir
         }
     }
 }
@@ -263,7 +263,7 @@ task buildDeliveryTomcatWithSolrSupport(group: "Build", description: "Builds the
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/delivery_tomcat_tomcat_solr_compatible:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "craftercms/delivery_tomcat_solr_compatible:${project.version}", buildDir
         }
     }
 }
@@ -368,14 +368,14 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildGitSshServer
 }
 
-task buildImagesWithSolrSupport(group: "Build", description: "Builds main Docker images") {
+task buildTomcatImagesWithSolrSupport(group: "Build", description: "Builds Tomcat Docker images with Solr support") {
     dependsOn buildAuthoringTomcatWithSolrSupport
     dependsOn buildDeliveryTomcatWithSolrSupport
 }
 
 task build(group: "Build", description: "Builds all Docker images") {
     dependsOn buildMainImages
-    dependsOn buildImagesWithSolrSupport
+    dependsOn buildTomcatImagesWithSolrSupport
     dependsOn buildProfile
     dependsOn buildLogrotate
 }
