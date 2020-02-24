@@ -11,7 +11,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM openjdk:8-slim
+FROM openjdk:8-jdk-slim
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
