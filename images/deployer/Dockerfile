@@ -34,8 +34,12 @@ WORKDIR /opt/crafter
 # Create volumes
 VOLUME [ "./data", "./logs"]
 
+# Add the Crafter user
+RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
+    chown -R crafter:crafter .
+
 # Copy bin folder
-COPY ./bin ./bin/
+COPY --chown=crafter:crafter ./bin ./bin/
 
 # Replace ports for default ones
 RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
@@ -50,10 +54,6 @@ RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
 # Copy entrypoint script and make it executable
 COPY ./docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
-
-# Add the Crafter user
-RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
-    chown -R crafter:crafter .
 
 # Expose port
 EXPOSE 9191
