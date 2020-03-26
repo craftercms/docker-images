@@ -11,7 +11,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM tomcat:8-jdk8-openjdk-slim
+FROM tomcat:8-jdk8-openjdk-slim as main
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
@@ -81,3 +81,11 @@ EXPOSE 8000
 # Entrypoint and command (run by default)
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
 CMD [ "run" ]
+
+FROM main as enterprise
+
+# Expose MariaDB cluster ports
+EXPOSE 3306
+EXPOSE 4567
+EXPOSE 4568
+EXPOSE 4444

@@ -78,6 +78,13 @@ ext {
         }
     }
 
+
+    buildTarget = 'main'
+    
+    if (project.hasProperty("enterprise")) {
+        buildTarget = 'enterprise'
+    }
+
     defaultTomcatBinExcludes = [
         "migration",
         "upgrade",
@@ -184,7 +191,7 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/authoring_tomcat:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', buildTarget, '-t', "craftercms/authoring_tomcat:${project.version}", buildDir
         }
     }
 }
@@ -211,7 +218,7 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/authoring_tomcat_solr_compatible:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', buildTarget, '-t', "craftercms/authoring_tomcat_solr_compatible:${project.version}", buildDir
         }
     }
 }
