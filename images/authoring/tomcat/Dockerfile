@@ -23,6 +23,7 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends libaio1; \
     apt-get install -y --no-install-recommends openssh-client; \
     apt-get install -y --no-install-recommends git; \
+    apt-get install -y --no-install-recommends rsync; \
     rm -rf /var/lib/apt/lists/*;
 
 # Create folders and make CRAFTER_HOME the workdir
