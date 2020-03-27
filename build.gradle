@@ -36,6 +36,8 @@ ext {
     imagesBuildDir = "${buildDir}/images"
     downloadsDir = "${buildDir}/downloads"
 
+    libsslUrl = "https://downloads.craftercms.org/ent/lib/libssl1.0.0.tar.gz"
+
     authoringBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-authoring-${project.version}.tar.gz"
     authoringBundleFile = "${downloadsDir}/" + FilenameUtils.getName(authoringBundleUrl)
     authoringBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
@@ -120,6 +122,12 @@ ext {
     ]
 }
 
+task downloadLibssl(type: Download) {
+    src libsslUrl
+    overwrite false
+    dest "${downloadsDir}/libssl1.0.0.tar.gz" 
+}
+
 task downloadAuthoringBundle(type: Download) {
     src authoringBundleUrl
     overwrite false
@@ -130,6 +138,12 @@ task downloadDeliveryBundle(type: Download) {
     src deliveryBundleUrl
     overwrite false
     dest deliveryBundleFile
+}
+
+task expandLibssl(type: Copy) {
+    mustRunAfter downloadLibssl
+    from tarTree("${downloadsDir}/libssl1.0.0.tar.gz")
+    into "${downloadsDir}/libssl1.0.0"
 }
 
 task expandAuthoringBundle(type: Copy) {
@@ -155,6 +169,10 @@ task prepareAuthoringBundle() {
             ext.authoringBundleRoot = authoringBundleFile
         } 
     }  
+    if (project.hasProperty("enterprise")) {
+        dependsOn downloadLibssl
+        dependsOn expandLibssl 
+    }
 }
 
 task prepareDeliveryBundle() {
@@ -184,6 +202,13 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
             into buildDir
         }
 
+        if (project.hasProperty("enterprise")) {
+            copy {
+                from "${downloadsDir}/libssl1.0.0/"
+                into "${buildDir}/lib"
+            }
+        }
+
         copy {
             from "${authoringBundleRoot}/bin/"
             into "${buildDir}/bin"
@@ -210,6 +235,13 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
             from "${imagesDir}/authoring/tomcat/"
             into buildDir
         }
+
+        if (project.hasProperty("enterprise")) {
+            copy {
+                from "${downloadsDir}/libssl1.0.0/"
+                into "${buildDir}/lib"
+            }
+        }        
 
         copy {
             from "${authoringBundleRoot}/bin/"
