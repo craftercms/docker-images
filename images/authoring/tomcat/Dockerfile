@@ -24,6 +24,9 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends openssh-client; \
     apt-get install -y --no-install-recommends git; \
     apt-get install -y --no-install-recommends rsync; \
+    apt-get install -y --no-install-recommends iproute2; \
+    apt-get install -y --no-install-recommends procps; \
+    apt-get install -y --no-install-recommends dnsutils; \
     rm -rf /var/lib/apt/lists/*;
 
 # Create folders and make CRAFTER_HOME the workdir
@@ -90,6 +93,8 @@ EXPOSE 3306
 EXPOSE 4567
 EXPOSE 4568
 EXPOSE 4444
+# Expose Hazelcast port
+EXPOSE 5701
 
 # Libraries needed by Galera (can be removed if a future version of Galera works with 1.1)
 COPY --chown=crafter:crafter lib/libcrypto.so.1.0.0 /lib/x86_64-linux-gnu/libcrypto.so.1.0.0
