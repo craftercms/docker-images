@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export CRAFTER_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+export CRAFTER_HOME=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 export CRAFTER_BACKUPS_DIR=$CRAFTER_HOME/backups
 
