@@ -21,6 +21,7 @@ RUN set -eux; \
     apt-get install -y gosu; \
     apt-get install -y --no-install-recommends lsof; \
     apt-get install -y --no-install-recommends libaio1; \
+    apt-get install -y --no-install-recommends libncurses5; \
     apt-get install -y --no-install-recommends openssh-client; \
     apt-get install -y --no-install-recommends git; \
     apt-get install -y --no-install-recommends rsync; \
