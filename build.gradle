@@ -400,11 +400,48 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
     }    
 }
 
+if (project.hasProperty("enterprise")) {
+
+    task buildStudioArbiter(group: "Build", description: "Builds the Studio Arbiter Docker image") {
+        dependsOn prepareAuthoringBundle
+        
+        def buildDir = "${imagesBuildDir}/arbiter"
+        
+        doFirst {
+            delete buildDir
+        }
+        doLast {
+            copy {
+                from "${downloadsDir}/libssl1.0.0/"
+                into "${buildDir}/lib"
+            }
+            
+            copy {
+                from "${authoringBundleRoot}/bin/studio-arbiter/studio-arbiter.jar"
+                into "${buildDir}/bin"
+            }
+            
+            copy {
+                from "${imagesDir}/arbiter"
+                into buildDir
+            }
+            
+            exec {
+                commandLine 'docker', 'build', '-t', "craftercms/studio-arbiter:${project.version}", buildDir
+            }
+        }
+    }
+
+}
+
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildAuthoringTomcat
     dependsOn buildDeliveryTomcat
     dependsOn buildDeployer
     dependsOn buildGitSshServer
+    if (project.hasProperty("enterprise")) {
+      dependsOn buildStudioArbiter
+    }
 }
 
 task buildTomcatImagesWithSolrSupport(group: "Build", description: "Builds Tomcat Docker images with Solr support") {
