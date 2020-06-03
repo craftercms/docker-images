@@ -10,6 +10,7 @@ Builds the Crafter CMS Docker images, including:
 6. Git SSH server
 7. Profile
 8. Logrotate
+9. Studio Arbiter (Enterprise only)
 
 # Pre-requisites
 
@@ -30,6 +31,7 @@ Builds the Crafter CMS Docker images, including:
 - **buildGitSshServer:** Builds the Git SSH Server Docker image
 - **buildProfile:** Builds the Profile Docker image
 - **buildLogrotate:** Builds the Logrotate Docker image
+- **buildStudioArbiter:** Builds the Studio Arbiter Docker image
 
 # Gradle parameters
 
