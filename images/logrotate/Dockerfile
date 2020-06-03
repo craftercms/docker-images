@@ -11,7 +11,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM alpine:3.10
+FROM alpine:3.10 as main
 
 # Add default variables. Default cron runs the logrotate daily at 12 AM
 ENV CRON_SCHEDULE='0 0 * * *' \
@@ -22,15 +22,15 @@ ENV CRON_SCHEDULE='0 0 * * *' \
 # Install dependencies
 RUN apk add --no-cache shadow logrotate tini gettext libintl
 
+# Add the Crafter user
+RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter
+
 # Copy entrypoint script and make it executable
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
 # Copy logrotate template conf
 COPY logrotate.tpl.conf .
-
-# Add the Crafter user
-RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter
 
 # Entrypoint and command
 ENTRYPOINT [ "./docker-entrypoint.sh" ]

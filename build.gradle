@@ -29,12 +29,14 @@ plugins {
     id "de.undercouch.download" version "4.0.4"
 }
 
-project.version = project.hasProperty("tag") ? project.property("tag") : "3.1.4" // craftercms version flag
+project.version = project.hasProperty("tag") ? project.property("tag") : "3.1.7" // craftercms version flag
 
 ext {
     imagesDir = "${projectDir}/images"
     imagesBuildDir = "${buildDir}/images"
     downloadsDir = "${buildDir}/downloads"
+
+    libsslUrl = "https://downloads.craftercms.org/ent/lib/libssl1.0.0.tar.gz"
 
     authoringBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-authoring-${project.version}.tar.gz"
     authoringBundleFile = "${downloadsDir}/" + FilenameUtils.getName(authoringBundleUrl)
@@ -78,6 +80,13 @@ ext {
         }
     }
 
+
+    buildTarget = 'main'
+    
+    if (project.hasProperty("enterprise")) {
+        buildTarget = 'enterprise'
+    }
+
     defaultTomcatBinExcludes = [
         "migration",
         "upgrade",
@@ -113,6 +122,12 @@ ext {
     ]
 }
 
+task downloadLibssl(type: Download) {
+    src libsslUrl
+    overwrite false
+    dest "${downloadsDir}/libssl1.0.0.tar.gz" 
+}
+
 task downloadAuthoringBundle(type: Download) {
     src authoringBundleUrl
     overwrite false
@@ -123,6 +138,12 @@ task downloadDeliveryBundle(type: Download) {
     src deliveryBundleUrl
     overwrite false
     dest deliveryBundleFile
+}
+
+task expandLibssl(type: Copy) {
+    mustRunAfter downloadLibssl
+    from tarTree("${downloadsDir}/libssl1.0.0.tar.gz")
+    into "${downloadsDir}/libssl1.0.0"
 }
 
 task expandAuthoringBundle(type: Copy) {
@@ -148,6 +169,10 @@ task prepareAuthoringBundle() {
             ext.authoringBundleRoot = authoringBundleFile
         } 
     }  
+    if (project.hasProperty("enterprise")) {
+        dependsOn downloadLibssl
+        dependsOn expandLibssl 
+    }
 }
 
 task prepareDeliveryBundle() {
@@ -177,6 +202,13 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
             into buildDir
         }
 
+        if (project.hasProperty("enterprise")) {
+            copy {
+                from "${downloadsDir}/libssl1.0.0/"
+                into "${buildDir}/lib"
+            }
+        }
+
         copy {
             from "${authoringBundleRoot}/bin/"
             into "${buildDir}/bin"
@@ -184,7 +216,7 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/authoring_tomcat:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', buildTarget, '-t', "craftercms/authoring_tomcat:${project.version}", buildDir
         }
     }
 }
@@ -204,6 +236,13 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
             into buildDir
         }
 
+        if (project.hasProperty("enterprise")) {
+            copy {
+                from "${downloadsDir}/libssl1.0.0/"
+                into "${buildDir}/lib"
+            }
+        }        
+
         copy {
             from "${authoringBundleRoot}/bin/"
             into "${buildDir}/bin"
@@ -211,7 +250,7 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/authoring_tomcat_solr_compatible:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', buildTarget, '-t', "craftercms/authoring_tomcat_solr_compatible:${project.version}", buildDir
         }
     }
 }
@@ -361,11 +400,48 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
     }    
 }
 
+if (project.hasProperty("enterprise")) {
+
+    task buildStudioArbiter(group: "Build", description: "Builds the Studio Arbiter Docker image") {
+        dependsOn prepareAuthoringBundle
+        
+        def buildDir = "${imagesBuildDir}/arbiter"
+        
+        doFirst {
+            delete buildDir
+        }
+        doLast {
+            copy {
+                from "${downloadsDir}/libssl1.0.0/"
+                into "${buildDir}/lib"
+            }
+            
+            copy {
+                from "${authoringBundleRoot}/bin/studio-arbiter/studio-arbiter.jar"
+                into "${buildDir}/bin"
+            }
+            
+            copy {
+                from "${imagesDir}/arbiter"
+                into buildDir
+            }
+            
+            exec {
+                commandLine 'docker', 'build', '-t', "craftercms/studio-arbiter:${project.version}", buildDir
+            }
+        }
+    }
+
+}
+
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildAuthoringTomcat
     dependsOn buildDeliveryTomcat
     dependsOn buildDeployer
     dependsOn buildGitSshServer
+    if (project.hasProperty("enterprise")) {
+      dependsOn buildStudioArbiter
+    }
 }
 
 task buildTomcatImagesWithSolrSupport(group: "Build", description: "Builds Tomcat Docker images with Solr support") {

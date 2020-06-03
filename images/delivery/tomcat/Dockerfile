@@ -11,7 +11,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM tomcat:8-slim
+FROM tomcat:8-jdk8-openjdk-slim as main
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
@@ -37,27 +37,35 @@ WORKDIR /opt/crafter
 # Create volumes
 VOLUME [ "./data", "./logs", "./temp" ]
 
+# Add the Crafter user
+RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
+    chown -R crafter:crafter .; \
+    chown -R crafter:crafter /usr/local/tomcat
+
 # Copy bin folder
-COPY ./bin ./bin/
+COPY --chown=crafter:crafter ./bin ./bin/
 
 # Make the Grapes dir a volume
 VOLUME ./bin/grapes
 
+# Delete the bin/dbms dir
 # Delete the apache tomcat folder, we're going to link to the image's own Tomcat
-RUN rm -rf ./bin/apache-tomcat && ln -s /usr/local/tomcat ./bin/apache-tomcat
+# Delete the conf and webapps
+RUN rm -rf ./bin/dbms; \
+    rm -rf ./bin/apache-tomcat; \
+    gosu crafter ln -s /usr/local/tomcat ./bin/apache-tomcat; \
+    rm -rf ./bin/apache-tomcat/conf/* && rm -rf ./bin/apache-tomcat/webapps/*
 
 # Copy Tomcat setenv.sh, config, shared and webapps
-RUN rm -rf ./bin/apache-tomcat/conf/* && rm -rf ./bin/apache-tomcat/webapps/*
-COPY ./bin/apache-tomcat/bin/setenv.sh ./bin/apache-tomcat/bin/
-COPY ./bin/apache-tomcat/conf ./bin/apache-tomcat/conf/
-COPY ./bin/apache-tomcat/webapps ./bin/apache-tomcat/webapps/
-COPY ./bin/apache-tomcat/shared ./bin/apache-tomcat/shared/
+COPY --chown=crafter:crafter ./bin/apache-tomcat/bin/setenv.sh ./bin/apache-tomcat/bin/
+COPY --chown=crafter:crafter ./bin/apache-tomcat/conf ./bin/apache-tomcat/conf/
+COPY --chown=crafter:crafter ./bin/apache-tomcat/webapps ./bin/apache-tomcat/webapps/
+COPY --chown=crafter:crafter ./bin/apache-tomcat/shared ./bin/apache-tomcat/shared/
 
 # Remove CATALINA_HOME from crafter-setenv.sh
-RUN sed -i '/export CATALINA_HOME=$CRAFTER_BIN_DIR\/apache-tomcat/d' ./bin/crafter-setenv.sh
-
 # Replace ports for default ones
-RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
+RUN sed -i '/export CATALINA_HOME=$CRAFTER_BIN_DIR\/apache-tomcat/d' ./bin/crafter-setenv.sh; \
+    sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
     sed -i 's/9202/9200/g' ./bin/crafter-setenv.sh; \
     sed -i 's/9192/9191/g' ./bin/crafter-setenv.sh; \
     sed -i 's/28020/27017/g' ./bin/crafter-setenv.sh; \
@@ -69,11 +77,6 @@ RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
 # Copy entrypoint script and make it executable
 COPY ./docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
-
-# Add the Crafter user
-RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
-    chown -R crafter:crafter .; \
-    chown -R crafter:crafter /usr/local/tomcat
 
 # Entrypoint and command (run by default)
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
