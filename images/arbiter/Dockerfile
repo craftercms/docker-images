@@ -25,11 +25,12 @@ EXPOSE 4567
 EXPOSE 4568
 EXPOSE 4444
 
-ARG JAR_FILE
-
 ENV LOG_CONFIG ""
 ENV LOG_PATH /opt/studio-arbiter/logs
 ENV BINARY_PATH /opt/studio-arbiter/garbd
+ENV HAZELCAST_CONFIG /opt/studio-arbiter/config/hazelcast-config.yaml
+ENV STARTUP_CHECK_INTERVAL 30
+ENV STARTUP_CHECK_TIMEOUT 300
 ENV JAVA_OPTS ""
 
 # Libraries needed by Galera (can be removed if a future version of Galera works with 1.1)
