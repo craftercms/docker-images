@@ -19,6 +19,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update; \
     apt-get install -y gosu; \
+    apt-get install -y --no-install-recommends curl; \
     apt-get install -y --no-install-recommends lsof; \
     apt-get install -y --no-install-recommends openssh-client; \
     apt-get install -y --no-install-recommends git; \
