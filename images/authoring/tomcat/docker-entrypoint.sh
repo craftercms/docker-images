@@ -20,10 +20,6 @@ export CRAFTER_BACKUPS_DIR=$CRAFTER_HOME/backups
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
-if [ ! -z "$CRAFTER_PASSWORD" ]; then
-    echo "$CRAFTER_PASSWORD" | passwd --stdin crafter
-fi
-
 if [ ! -d $CATALINA_LOGS_DIR ]; then
     mkdir -p $CATALINA_LOGS_DIR
 fi
