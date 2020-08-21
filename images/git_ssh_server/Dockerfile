@@ -22,14 +22,26 @@ RUN mkdir -p /opt/crafter/data
 # Create volumes
 VOLUME [ "/opt/crafter/data" ]
 
-# Add the Crafter user
-# Enable public key auth. Also set the host key algorithms to just RSA to avoid issues with JGit/JSch
+# - Add the Crafter user
+# - Make git-shell the default shell of the crafter user
+# - Remove root default shell access
+# - Enable public key auth and disable other type of auth. Also set the host key algorithms to just RSA to avoid issues 
+#   with JGit/JSch
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
     usermod -p '*' crafter; \
     chown -R crafter:crafter /opt/crafter/data; \
+    usermod -s $(command -v git-shell) crafter; \
+    usermod -s /sbin/nologin root; \
     sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config; \
+    sed -i 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/g' /etc/ssh/sshd_config; \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config; \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config; \
     echo '' >> /etc/ssh/sshd_config; \
     echo 'HostKeyAlgorithms ssh-rsa' >> /etc/ssh/sshd_config
+
+# Copy no-interactive-login file to the crafter's user home and make it executable
+COPY --chown=crafter:crafter no-interactive-login /home/crafter/git-shell-commands/no-interactive-login
+RUN chmod +x /home/crafter/git-shell-commands/no-interactive-login
 
 # Copy entrypoint script and make it executable
 COPY docker-entrypoint.sh .

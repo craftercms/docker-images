@@ -17,10 +17,6 @@
 # Generate host keys (if not mounted)
 ssh-keygen -A
 
-if [ ! -z "$CRAFTER_PASSWORD" ]; then
-    echo "$CRAFTER_PASSWORD" | passwd --stdin crafter
-fi
-
 # Fix for ssh key permissions
 MOUNTED_SSH_DIR=/opt/crafter/.ssh
 USER_HOME_SSH_DIR=/home/crafter/.ssh

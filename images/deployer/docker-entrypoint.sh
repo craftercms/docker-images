@@ -19,10 +19,6 @@ export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
-if [ ! -z "$CRAFTER_PASSWORD" ]; then
-    echo "$CRAFTER_PASSWORD" | passwd --stdin crafter
-fi
-
 if [ ! -d $DEPLOYER_LOGS_DIR ]; then
     mkdir -p $DEPLOYER_LOGS_DIR;
 fi
