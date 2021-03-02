@@ -80,11 +80,10 @@ ext {
         }
     }
 
-
-    buildTarget = 'main'
+    authoringBuildTarget = 'main'
     
     if (project.hasProperty("enterprise")) {
-        buildTarget = 'enterprise'
+        authoringBuildTarget = 'enterprise'
     }
 
     defaultTomcatBinExcludes = [
@@ -216,11 +215,22 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
         }
 
         exec {
-            commandLine 'docker', 'build', '--target', buildTarget, '-t', "craftercms/authoring_tomcat:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "craftercms/authoring_tomcat:${project.version}", buildDir
         }
     }
 }
 
+task buildAuthoringTomcatWithImageMagick(group: "Build", description: "Builds the Authoring Tomcat Docker image, including the ImageMagick binary") {
+    dependsOn buildAuthoringTomcat
+
+    def buildDir = "${imagesBuildDir}/authoring/tomcat"
+
+    doLast {
+        exec {
+            commandLine 'docker', 'build', '--target', 'imagemagick', '-t', "craftercms/authoring_tomcat_with_imagemagick:${project.version}", buildDir
+        }
+    }
+}
 
 task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds the Authoring Tomcat With Solr Support Docker image") {
     dependsOn prepareAuthoringBundle
@@ -250,7 +260,7 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
         }
 
         exec {
-            commandLine 'docker', 'build', '--target', buildTarget, '-t', "craftercms/authoring_tomcat_solr_compatible:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "craftercms/authoring_tomcat_solr_compatible:${project.version}", buildDir
         }
     }
 }
@@ -401,7 +411,6 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
 }
 
 if (project.hasProperty("enterprise")) {
-
     task buildStudioArbiter(group: "Build", description: "Builds the Studio Arbiter Docker image") {
         dependsOn prepareAuthoringBundle
         
@@ -431,7 +440,6 @@ if (project.hasProperty("enterprise")) {
             }
         }
     }
-
 }
 
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
@@ -440,7 +448,10 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildDeployer
     dependsOn buildGitSshServer
     if (project.hasProperty("enterprise")) {
-      dependsOn buildStudioArbiter
+        dependsOn buildStudioArbiter
+        if (project.hasProperty("imagemagick")) {
+            dependsOn buildAuthoringTomcatWithImageMagick
+        }
     }
 }
 
