@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -382,6 +382,24 @@ task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server D
     }    
 }
 
+task buildGitHttpServer(group: "Build", description: "Builds the Git HTTP Server Docker image")  {
+    def buildDir = "${imagesBuildDir}/git_http_server"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/git_http_server/"
+            into buildDir
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/git_http_server:${project.version}", buildDir
+        }
+    }    
+}
+
 task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker image")  {
     def buildDir = "${imagesBuildDir}/logrotate"
 
@@ -439,6 +457,7 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildDeliveryTomcat
     dependsOn buildDeployer
     dependsOn buildGitSshServer
+    dependsOn buildGitHttpServer
     if (project.hasProperty("enterprise")) {
       dependsOn buildStudioArbiter
     }
