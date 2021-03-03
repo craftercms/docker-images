@@ -392,20 +392,20 @@ task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server D
     }    
 }
 
-task buildGitHttpServer(group: "Build", description: "Builds the Git HTTP Server Docker image")  {
-    def buildDir = "${imagesBuildDir}/git_http_server"
+task buildGitHttpsServer(group: "Build", description: "Builds the Git HTTPS Server Docker image")  {
+    def buildDir = "${imagesBuildDir}/git_https_server"
 
     doFirst {
         delete buildDir
     }
     doLast {
         copy {
-            from "${imagesDir}/git_http_server/"
+            from "${imagesDir}/git_https_server/"
             into buildDir
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/git_http_server:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "craftercms/git_https_server:${project.version}", buildDir
         }
     }    
 }
@@ -465,7 +465,7 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildDeliveryTomcat
     dependsOn buildDeployer
     dependsOn buildGitSshServer
-    dependsOn buildGitHttpServer
+    dependsOn buildGitHttpsServer
     if (project.hasProperty("enterprise")) {
         dependsOn buildStudioArbiter
         if (project.hasProperty("imagemagick")) {

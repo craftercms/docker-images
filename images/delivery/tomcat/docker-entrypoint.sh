@@ -53,6 +53,19 @@ if [ -d $MOUNTED_SSH_DIR ]; then
     chmod 644 $USER_HOME_SSH_DIR/*.pub
 fi
 
+TRUSTED_CERTS_DIR=$CRAFTER_HOME/trusted-certs
+
+# Import trusted certs
+if [ -d $TRUSTED_CERTS_DIR ]; then
+    for cert_file in "$TRUSTED_CERTS_DIR"/*; do
+        cert_filename="${cert_file##*/}"
+        cert_filename_no_ext="${cert_filename%.*}"
+
+        echo "Importing trusted certificate $cert_file"
+        keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -alias "$cert_filename_no_ext" -file "$cert_file"
+    done
+fi
+
 if [ "$1" = 'run' ]; then
     exec gosu crafter $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run
 elif [ "$1" = 'debug' ]; then

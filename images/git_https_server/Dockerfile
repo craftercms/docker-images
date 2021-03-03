@@ -24,7 +24,7 @@ VOLUME [ "/opt/crafter/data" ]
 
 # Add the Crafter user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
-    usermod -p '*' crafter;;
+    usermod -p '*' crafter;
 
 # Set default values for env variables
 ENV GIT_REPOS_ROOT=/opt/crafter/data/repos/sites
