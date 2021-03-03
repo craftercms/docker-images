@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -80,11 +80,10 @@ ext {
         }
     }
 
-
-    buildTarget = 'main'
+    authoringBuildTarget = 'main'
     
     if (project.hasProperty("enterprise")) {
-        buildTarget = 'enterprise'
+        authoringBuildTarget = 'enterprise'
     }
 
     defaultTomcatBinExcludes = [
@@ -216,11 +215,22 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
         }
 
         exec {
-            commandLine 'docker', 'build', '--target', buildTarget, '-t', "craftercms/authoring_tomcat:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "craftercms/authoring_tomcat:${project.version}", buildDir
         }
     }
 }
 
+task buildAuthoringTomcatWithImageMagick(group: "Build", description: "Builds the Authoring Tomcat Docker image, including the ImageMagick binary") {
+    dependsOn buildAuthoringTomcat
+
+    def buildDir = "${imagesBuildDir}/authoring/tomcat"
+
+    doLast {
+        exec {
+            commandLine 'docker', 'build', '--target', 'imagemagick', '-t', "craftercms/authoring_tomcat_with_imagemagick:${project.version}", buildDir
+        }
+    }
+}
 
 task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds the Authoring Tomcat With Solr Support Docker image") {
     dependsOn prepareAuthoringBundle
@@ -250,7 +260,7 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
         }
 
         exec {
-            commandLine 'docker', 'build', '--target', buildTarget, '-t', "craftercms/authoring_tomcat_solr_compatible:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "craftercms/authoring_tomcat_solr_compatible:${project.version}", buildDir
         }
     }
 }
@@ -382,6 +392,24 @@ task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server D
     }    
 }
 
+task buildGitHttpsServer(group: "Build", description: "Builds the Git HTTPS Server Docker image")  {
+    def buildDir = "${imagesBuildDir}/git_https_server"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/git_https_server/"
+            into buildDir
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/git_https_server:${project.version}", buildDir
+        }
+    }    
+}
+
 task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker image")  {
     def buildDir = "${imagesBuildDir}/logrotate"
 
@@ -401,7 +429,6 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
 }
 
 if (project.hasProperty("enterprise")) {
-
     task buildStudioArbiter(group: "Build", description: "Builds the Studio Arbiter Docker image") {
         dependsOn prepareAuthoringBundle
         
@@ -431,7 +458,6 @@ if (project.hasProperty("enterprise")) {
             }
         }
     }
-
 }
 
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
@@ -439,8 +465,12 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildDeliveryTomcat
     dependsOn buildDeployer
     dependsOn buildGitSshServer
+    dependsOn buildGitHttpsServer
     if (project.hasProperty("enterprise")) {
-      dependsOn buildStudioArbiter
+        dependsOn buildStudioArbiter
+        if (project.hasProperty("imagemagick")) {
+            dependsOn buildAuthoringTomcatWithImageMagick
+        }
     }
 }
 
