@@ -27,7 +27,7 @@ RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
     usermod -p '*' crafter;
 
 # Set default values for env variables
-ENV GIT_REPOS_ROOT=/opt/crafter/data/repos/sites
+ENV GIT_REPOS_ROOT=/opt/crafter/data/repos
 ENV PASSWD_FILE_PATH="/usr/local/apache2/.htpasswd"
 ENV SSL_CERT_FILE_PATH="/usr/local/apache2/conf/server.crt"
 ENV SSL_PRIV_KEY_FILE_PATH="/usr/local/apache2/conf/server.key"
