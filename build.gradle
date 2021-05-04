@@ -38,32 +38,36 @@ ext {
 
     libsslUrl = "https://downloads.craftercms.org/ent/lib/libssl1.0.0.tar.gz"
 
-    authoringBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-authoring-${project.version}.tar.gz"
-    authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleUrl)
-    authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
-
-    deliveryBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-delivery-${project.version}.tar.gz"
-    deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
-    deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
-
-    if (project.hasProperty("authoring.bundle")) {
-        if (project.property("authoring.bundle") ==~ /^https?:\/\/.+$/) {
-            authoringBundleUrl = project.property("authoring.bundle")
+    if (project.hasProperty("authoringBundle")) {
+        if (project.property("authoringBundle") ==~ /^https?:\/\/.+$/) {
+            authoringBundleUrl = project.property("authoringBundle")
             authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleUrl)
+            authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
         } else {
             authoringBundleUrl = ""
-            authoringBundleFile = project.property("authoring.bundle")
+            authoringBundleFile = project.property("authoringBundle")
+            authoringBundleRoot = ""
         }
+    } else {
+        authoringBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-authoring-${project.version}.tar.gz"
+        authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleUrl)
+        authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
     }
 
     if (project.hasProperty("deliveryBundle")) {
         if (project.property("deliveryBundle") ==~ /^https?:\/\/.+$/) {
             deliveryBundleUrl = project.property("deliveryBundle")
             deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
+            deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
         } else {
             deliveryBundleUrl = ""
             deliveryBundleFile = project.property("deliveryBundle")
+            deliveryBundleRoot = ""
         }
+    } else {
+        deliveryBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-delivery-${project.version}.tar.gz"
+        deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
+        deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
     }
 
     authoringBuildTarget = 'main'
