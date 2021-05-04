@@ -46,13 +46,13 @@ ext {
     deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
     deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
 
-    if (project.hasProperty("authoring.bundle")) {
-        if (project.property("authoring.bundle") ==~ /^https?:\/\/.+$/) {
-            authoringBundleUrl = project.property("authoring.bundle")
+    if (project.hasProperty("authoringBundle")) {
+        if (project.property("authoringBundle") ==~ /^https?:\/\/.+$/) {
+            authoringBundleUrl = project.property("authoringBundle")
             authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleUrl)
         } else {
             authoringBundleUrl = ""
-            authoringBundleFile = project.property("authoring.bundle")
+            authoringBundleFile = project.property("authoringBundle")
         }
     }
 
