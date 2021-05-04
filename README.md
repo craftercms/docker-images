@@ -82,7 +82,7 @@ Builds the Crafter CMS Docker images, including:
 ```bash
     ./gradlew buildMainImages buildTomcatImagesWithSolrSupport
 ```
-- Build the enterprise images the the Authoring Tomcat with Imagemagick image
+- Build the enterprise images and the Authoring Tomcat with Imagemagick image
 ```bash
     ./gradlew build -Penterprise -Pimagemagick -PauthoringBundle=https://downloads.craftercms.org/ent/3.1.14E/social/crafter-cms-authoring-3.1.14E.tar.gz -PdeliveryBundle=https://downloads.craftercms.org/ent/3.1.14E/social/crafter-cms-delivery-3.1.14E.tar.gz -Ptag=3.1.14E
 ```
