@@ -56,13 +56,13 @@ ext {
         }
     }
 
-    if (project.hasProperty("delivery.bundle")) {
-        if (project.property("delivery.bundle") ==~ /^https?:\/\/.+$/) {
-            deliveryBundleUrl = project.property("delivery.bundle")
+    if (project.hasProperty("deliveryBundle")) {
+        if (project.property("deliveryBundle") ==~ /^https?:\/\/.+$/) {
+            deliveryBundleUrl = project.property("deliveryBundle")
             deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
         } else {
             deliveryBundleUrl = ""
-            deliveryBundleFile = project.property("delivery.bundle")
+            deliveryBundleFile = project.property("deliveryBundle")
         }
     }
 
@@ -186,9 +186,9 @@ task prepareDeliveryBundle() {
 task copyAuthoringCustomWebapps() {
     dependsOn prepareAuthoringBundle
 
-    if (project.hasProperty("authoring.customWebapps")) {
+    if (project.hasProperty("authoringCustomWebapps")) {
         doLast {
-            project.property('authoring.customWebapps').split(',').each { war ->
+            project.property('authoringCustomWebapps').split(',').each { war ->
                 copy {
                     from war
                     into "${authoringBundleRoot}/bin/apache-tomcat/webapps"
@@ -201,9 +201,9 @@ task copyAuthoringCustomWebapps() {
 task copyDeliveryCustomWebapps() {
     dependsOn prepareDeliveryBundle
 
-    if (project.hasProperty("delivery.customWebapps")) {
+    if (project.hasProperty("deliveryCustomWebapps")) {
         doLast {
-            project.property('delivery.customWebapps').split(',').each { war ->
+            project.property('deliveryCustomWebapps').split(',').each { war ->
                 copy {
                     from war
                     into "${deliveryBundleRoot}/bin/apache-tomcat/webapps"
