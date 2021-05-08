@@ -162,7 +162,7 @@ task prepareAuthoringBundle() {
             doLast {
                 copy {
                     from "${authoringBundleFile}/"
-                    to authoringBundleRoot
+                    into authoringBundleRoot
                 }
             }
         } 
@@ -180,7 +180,7 @@ task prepareDeliveryBundle() {
             doLast {
                 copy {
                     from "${deliveryBundleFile}/"
-                    to deliveryBundleRoot
+                    into deliveryBundleRoot
                 }
             }
         } 
