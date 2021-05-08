@@ -46,7 +46,7 @@ ext {
         } else {
             authoringBundleUrl = ""
             authoringBundleFile = project.property("authoringBundle")
-            authoringBundleRoot = ""
+            authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleFile) + "/crafter"
         }
     } else {
         authoringBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-authoring-${project.version}.tar.gz"
@@ -62,7 +62,7 @@ ext {
         } else {
             deliveryBundleUrl = ""
             deliveryBundleFile = project.property("deliveryBundle")
-            deliveryBundleRoot = ""
+            deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile) + "/crafter"
         }
     } else {
         deliveryBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-delivery-${project.version}.tar.gz"
@@ -179,8 +179,8 @@ task prepareDeliveryBundle() {
         }  else {
             doLast {
                 copy {
-                    from "${deliveryBundleRoot}/"
-                    to deliveryBundleFile
+                    from "${deliveryBundleFile}/"
+                    to deliveryBundleRoot
                 }
             }
         } 
