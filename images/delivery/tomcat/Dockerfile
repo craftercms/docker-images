@@ -36,7 +36,7 @@ RUN mkdir -p /opt/crafter; \
 WORKDIR /opt/crafter
 
 # Create volumes
-VOLUME [ "./data", "./logs", "./temp" ]
+VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
 
 # Add the Crafter user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
@@ -47,7 +47,7 @@ RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
 COPY --chown=crafter:crafter ./bin ./bin/
 
 # Make the Grapes dir a volume
-VOLUME ./bin/grapes
+VOLUME /opt/crafter/bin/grapes
 
 # Delete the bin/dbms dir
 # Delete the apache tomcat folder, we're going to link to the image's own Tomcat
