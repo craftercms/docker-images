@@ -33,7 +33,7 @@ RUN mkdir -p /opt/crafter; \
 WORKDIR /opt/crafter
 
 # Create volumes
-VOLUME [ "./data", "./logs"]
+VOLUME [ "/opt/crafter/data", "/opt/crafter/logs"]
 
 # Add the Crafter user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
