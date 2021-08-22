@@ -11,7 +11,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM alpine:3.10 as main
+FROM alpine:latest as main
 
 # Add default variables. Default cron runs the logrotate daily at 12 AM
 ENV CRON_SCHEDULE='0 0 * * *' \
