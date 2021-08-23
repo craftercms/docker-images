@@ -6,25 +6,27 @@
 
 # Supported tags and respective Dockerfile links
 
-* [3.1.16](https://github.com/craftercms/docker-images/blob/v3.1.16/images/arbiter/Dockerfile)
+* [3.1.17E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.17/images/arbiter/Dockerfile)
 
-* [3.1.15](https://github.com/craftercms/docker-images/blob/v3.1.15/images/arbiter/Dockerfile)
+* [3.1.16E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.16/images/arbiter/Dockerfile)
 
-* [3.1.14](https://github.com/craftercms/docker-images/blob/v3.1.14/images/arbiter/Dockerfile)
+* [3.1.15E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.15/images/arbiter/Dockerfile)
 
-* [3.1.13](https://github.com/craftercms/docker-images/blob/v3.1.13/images/arbiter/Dockerfile)
+* [3.1.14E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.14/images/arbiter/Dockerfile)
 
-* [3.1.12](https://github.com/craftercms/docker-images/blob/v3.1.12/images/arbiter/Dockerfile)
+* [3.1.13E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.13/images/arbiter/Dockerfile)
 
-* [3.1.11](https://github.com/craftercms/docker-images/blob/v3.1.11/images/arbiter/Dockerfile)
+* [3.1.12E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.12/images/arbiter/Dockerfile)
 
-* [3.1.10](https://github.com/craftercms/docker-images/blob/v3.1.10/images/arbiter/Dockerfile)
+* [3.1.11E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.11/images/arbiter/Dockerfile)
 
-* [3.1.9](https://github.com/craftercms/docker-images/blob/v3.1.9/images/arbiter/Dockerfile)
+* [3.1.10E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.10/images/arbiter/Dockerfile)
 
-* [3.1.8](https://github.com/craftercms/docker-images/blob/v3.1.8/images/arbiter/Dockerfile)
+* [3.1.9E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.9/images/arbiter/Dockerfile)
 
-* [3.1.7](https://github.com/craftercms/docker-images/blob/v3.1.7/images/arbiter/Dockerfile)
+* [3.1.8E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.8/images/arbiter/Dockerfile)
+
+* [3.1.7E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.7/images/arbiter/Dockerfile)
 
 # Quick reference (cont.)
 
@@ -56,7 +58,7 @@
 Latest version:
 
 ```
-craftercms/studio-arbiter
+craftercms/studio-arbiter:<latest_listed_version>
 ```
 
 Other versions:

@@ -6,6 +6,8 @@
 
 # Supported tags and respective Dockerfile links
 
+* [3.1.17](https://github.com/craftercms/docker-images/blob/v3.1.17/images/delivery/tomcat/Dockerfile)
+
 * [3.1.16](https://github.com/craftercms/docker-images/blob/v3.1.16/images/delivery/tomcat/Dockerfile)
 
 * [3.1.15](https://github.com/craftercms/docker-images/blob/v3.1.15/images/delivery/tomcat/Dockerfile)

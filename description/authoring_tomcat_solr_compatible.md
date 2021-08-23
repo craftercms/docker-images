@@ -6,29 +6,31 @@
 
 # Supported tags and respective Dockerfile links
 
-* [3.1.16](https://github.com/craftercms/docker-images/blob/v3.1.16/images/authoring/tomcat/Dockerfile)
+* [3.1.17E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.17/images/authoring/tomcat/Dockerfile)
 
-* [3.1.15](https://github.com/craftercms/docker-images/blob/v3.1.15/images/authoring/tomcat/Dockerfile)
+* [3.1.16E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.16/images/authoring/tomcat/Dockerfile)
 
-* [3.1.14](https://github.com/craftercms/docker-images/blob/v3.1.14/images/authoring/tomcat/Dockerfile)
+* [3.1.15E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.15/images/authoring/tomcat/Dockerfile)
 
-* [3.1.13](https://github.com/craftercms/docker-images/blob/v3.1.13/images/authoring/tomcat/Dockerfile)
+* [3.1.14E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.14/images/authoring/tomcat/Dockerfile)
 
-* [3.1.12](https://github.com/craftercms/docker-images/blob/v3.1.12/images/authoring/tomcat/Dockerfile)
+* [3.1.13E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.13/images/authoring/tomcat/Dockerfile)
 
-* [3.1.11](https://github.com/craftercms/docker-images/blob/v3.1.11/images/authoring/tomcat/Dockerfile)
+* [3.1.12E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.12/images/authoring/tomcat/Dockerfile)
 
-* [3.1.10](https://github.com/craftercms/docker-images/blob/v3.1.10/images/authoring/tomcat/Dockerfile)
+* [3.1.11E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.11/images/authoring/tomcat/Dockerfile)
 
-* [3.1.9](https://github.com/craftercms/docker-images/blob/v3.1.9/images/authoring/tomcat/Dockerfile)
+* [3.1.10E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.10/images/authoring/tomcat/Dockerfile)
 
-* [3.1.8](https://github.com/craftercms/docker-images/blob/v3.1.8/images/authoring/tomcat/Dockerfile)
+* [3.1.9E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.9/images/authoring/tomcat/Dockerfile)
 
-* [3.1.7](https://github.com/craftercms/docker-images/blob/v3.1.7/images/authoring/tomcat/Dockerfile)
+* [3.1.8E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.8/images/authoring/tomcat/Dockerfile)
 
-* [3.1.6](https://github.com/craftercms/docker-images/blob/v3.1.6/images/authoring/tomcat/Dockerfile)
+* [3.1.7E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.7/images/authoring/tomcat/Dockerfile)
 
-* [3.1.5](https://github.com/craftercms/docker-images/blob/v3.1.5/images/authoring/tomcat/Dockerfile)
+* [3.1.6E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.6/images/authoring/tomcat/Dockerfile)
+
+* [3.1.5E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.5/images/authoring/tomcat/Dockerfile)
 
 # Quick reference (cont.)
 
@@ -60,7 +62,7 @@
 Latest version:
 
 ```
-craftercms/authoring_tomcat_solr_compatible
+craftercms/authoring_tomcat_solr_compatible:<latest_listed_version>
 ```
 
 Other versions:
