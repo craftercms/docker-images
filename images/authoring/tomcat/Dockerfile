@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -11,7 +11,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM tomcat:8-jdk8-openjdk-slim as main
+FROM tomcat:8-jdk11-openjdk-slim as main
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
@@ -41,7 +41,7 @@ RUN mkdir -p /opt/crafter; \
 WORKDIR /opt/crafter
 
 # Create volumes
-VOLUME [ "./data", "./logs", "./temp" ]
+VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
 
 # Add the Crafter user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
@@ -52,7 +52,7 @@ RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
 COPY --chown=crafter:crafter ./bin ./bin/
 
 # Make the Grapes dir a volume
-VOLUME ./bin/grapes
+VOLUME /opt/crafter/bin/grapes
 
 # Delete the bin/dbms dir
 # Delete the apache tomcat folder, we're going to link to the image's own Tomcat
@@ -100,3 +100,10 @@ EXPOSE 5701
 # Libraries needed by Galera (can be removed if a future version of Galera works with 1.1)
 COPY --chown=crafter:crafter lib/libcrypto.so.1.0.0 /lib/x86_64-linux-gnu/libcrypto.so.1.0.0
 COPY --chown=crafter:crafter lib/libssl.so.1.0.0 /lib/x86_64-linux-gnu/libssl.so.1.0.0
+
+FROM enterprise as imagemagick
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends imagemagick; \
+    rm -rf /var/lib/apt/lists/*;

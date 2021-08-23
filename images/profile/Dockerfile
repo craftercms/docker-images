@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -11,7 +11,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM tomcat:8-jdk8-openjdk-slim as main
+FROM tomcat:8-jdk11-openjdk-slim as main
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
@@ -30,7 +30,7 @@ RUN mkdir -p /opt/crafter; \
 WORKDIR /opt/crafter
 
 # Create volumes
-VOLUME [ "./logs", "./temp" ]
+VOLUME [ "/opt/crafter/logs", "/opt/crafter/temp" ]
 
 # Add the Crafter user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -51,6 +51,19 @@ if [ -d $MOUNTED_SSH_DIR ]; then
     chmod 700 $USER_HOME_SSH_DIR
     chmod 600 $USER_HOME_SSH_DIR/*
     chmod 644 $USER_HOME_SSH_DIR/*.pub
+fi
+
+TRUSTED_CERTS_DIR=$CRAFTER_HOME/trusted-certs
+
+# Import trusted certs
+if [ -d $TRUSTED_CERTS_DIR ]; then
+    for cert_file in "$TRUSTED_CERTS_DIR"/*; do
+        cert_filename="${cert_file##*/}"
+        cert_filename_no_ext="${cert_filename%.*}"
+
+        echo "Importing trusted certificate $cert_file"
+        keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -alias "$cert_filename_no_ext" -file "$cert_file"
+    done
 fi
 
 if [ "$1" = 'run' ]; then

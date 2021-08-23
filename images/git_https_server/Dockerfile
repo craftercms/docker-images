@@ -11,27 +11,36 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM alpine:3.10 as main
-
-# Add default variables. Default cron runs the logrotate daily at 12 AM
-ENV CRON_SCHEDULE='0 0 * * *' \
-    LOGROTATE_PATTERN='/opt/crafter/logs/deployer/* /opt/crafter/logs/tomcat/*' \
-    LOGROTATE_COPIES='10' \
-    LOGROTATE_SIZE='10M'
+FROM httpd:2.4-alpine
 
 # Install dependencies
-RUN apk add --no-cache shadow logrotate tini gettext libintl
+RUN apk add --no-cache bash shadow git git-daemon su-exec
+
+# Create folders for crafter user
+RUN mkdir -p /opt/crafter/data
+
+# Create volumes
+VOLUME [ "/opt/crafter/data" ]
 
 # Add the Crafter user
-RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter
+RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
+    usermod -p '*' crafter;
+
+# Set default values for env variables
+ENV GIT_REPOS_ROOT=/opt/crafter/data/repos
+ENV PASSWD_FILE_PATH="/usr/local/apache2/.htpasswd"
+ENV SSL_CERT_FILE_PATH="/usr/local/apache2/conf/server.crt"
+ENV SSL_PRIV_KEY_FILE_PATH="/usr/local/apache2/conf/server.key"
+
+# Copy configuration
+COPY ./conf ./conf/
 
 # Copy entrypoint script and make it executable
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
-# Copy logrotate template conf
-COPY logrotate.tpl.conf .
+# Expose HTTPS port
+EXPOSE 443
 
-# Entrypoint and command
+# Entrypoint
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
-CMD ["/usr/sbin/crond", "-f", "-L", "/dev/stdout"]
