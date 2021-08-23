@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -29,62 +29,51 @@ plugins {
     id "de.undercouch.download" version "4.0.4"
 }
 
-project.version = project.hasProperty("tag") ? project.property("tag") : "3.1.7-SNAPSHOT" // craftercms version flag
+project.version = project.hasProperty("tag") ? project.property("tag") : "3.1.18-SNAPSHOT" // craftercms version flag
 
 ext {
     imagesDir = "${projectDir}/images"
     imagesBuildDir = "${buildDir}/images"
-    downloadsDir = "${buildDir}/downloads"
+    tempDir = "${buildDir}/temp"
 
     libsslUrl = "https://downloads.craftercms.org/ent/lib/libssl1.0.0.tar.gz"
 
-    authoringBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-authoring-${project.version}.tar.gz"
-    authoringBundleFile = "${downloadsDir}/" + FilenameUtils.getName(authoringBundleUrl)
-    authoringBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
-
-    deliveryBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-delivery-${project.version}.tar.gz"
-    deliveryBundleFile = "${downloadsDir}/" + FilenameUtils.getName(deliveryBundleUrl)
-    deliveryBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
-
-    if (project.hasProperty("authoring.bundle")) {
-        if (project.property("authoring.bundle") ==~ /^https?:\/\/.+$/) {
-            authoringBundleUrl = project.property("authoring.bundle")
-            authoringBundleFile = "${downloadsDir}/" + FilenameUtils.getName(authoringBundleUrl)
-            authoringBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
+    if (project.hasProperty("authoringBundle")) {
+        if (project.property("authoringBundle") ==~ /^https?:\/\/.+$/) {
+            authoringBundleUrl = project.property("authoringBundle")
+            authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleUrl)
+            authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
         } else {
             authoringBundleUrl = ""
-            authoringBundleFile = project.property("authoring.bundle")
-
-            if (file(authoringBundleFile).directory) {
-                authoringBundleRoot = authoringBundleFile
-            } else {
-                authoringBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleFile) + "/crafter"
-            }
+            authoringBundleFile = project.property("authoringBundle")
+            authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleFile) + "/crafter"
         }
+    } else {
+        authoringBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-authoring-${project.version}.tar.gz"
+        authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleUrl)
+        authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
     }
 
-    if (project.hasProperty("delivery.bundle")) {
-        if (project.property("delivery.bundle") ==~ /^https?:\/\/.+$/) {
-            deliveryBundleUrl = project.property("delivery.bundle")
-            deliveryBundleFile = "${downloadsDir}/" + FilenameUtils.getName(deliveryBundleUrl)
-            deliveryBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
+    if (project.hasProperty("deliveryBundle")) {
+        if (project.property("deliveryBundle") ==~ /^https?:\/\/.+$/) {
+            deliveryBundleUrl = project.property("deliveryBundle")
+            deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
+            deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
         } else {
             deliveryBundleUrl = ""
-            deliveryBundleFile = project.property("delivery.bundle")
-
-            if (file(deliveryBundleFile).directory) {
-                deliveryBundleRoot = deliveryBundleFile
-            } else {
-                deliveryBundleRoot = "${downloadsDir}/" + FilenameUtils.getBaseName(deliveryBundleFile) + "/crafter"
-            }
+            deliveryBundleFile = project.property("deliveryBundle")
+            deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile) + "/crafter"
         }
+    } else {
+        deliveryBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-delivery-${project.version}.tar.gz"
+        deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
+        deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
     }
 
-
-    buildTarget = 'main'
+    authoringBuildTarget = 'main'
     
     if (project.hasProperty("enterprise")) {
-        buildTarget = 'enterprise'
+        authoringBuildTarget = 'enterprise'
     }
 
     defaultTomcatBinExcludes = [
@@ -125,7 +114,7 @@ ext {
 task downloadLibssl(type: Download) {
     src libsslUrl
     overwrite false
-    dest "${downloadsDir}/libssl1.0.0.tar.gz" 
+    dest "${tempDir}/libssl1.0.0.tar.gz" 
 }
 
 task downloadAuthoringBundle(type: Download) {
@@ -142,23 +131,27 @@ task downloadDeliveryBundle(type: Download) {
 
 task expandLibssl(type: Copy) {
     mustRunAfter downloadLibssl
-    from tarTree("${downloadsDir}/libssl1.0.0.tar.gz")
-    into "${downloadsDir}/libssl1.0.0"
+    from tarTree("${tempDir}/libssl1.0.0.tar.gz")
+    into "${tempDir}/libssl1.0.0"
 }
 
 task expandAuthoringBundle(type: Copy) {
     mustRunAfter downloadAuthoringBundle
     from tarTree(authoringBundleFile)
-    into "${downloadsDir}/" + FilenameUtils.getBaseName(authoringBundleFile)
+    into "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleFile)
 }
 
 task expandDeliveryBundle(type: Copy) {
     mustRunAfter downloadDeliveryBundle
     from tarTree(deliveryBundleFile)
-    into "${downloadsDir}/" + FilenameUtils.getBaseName(deliveryBundleFile)
+    into "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile)
 }
 
-task prepareAuthoringBundle() {
+task prepareAuthoringBundle() { 
+    if (project.hasProperty("enterprise")) {
+        dependsOn downloadLibssl
+        dependsOn expandLibssl 
+    }
     if (!file(authoringBundleRoot).exists()) {
         if (authoringBundleUrl) {
             dependsOn downloadAuthoringBundle
@@ -166,13 +159,14 @@ task prepareAuthoringBundle() {
         } else if (file(authoringBundleFile).file) {
             dependsOn expandAuthoringBundle
         } else {
-            ext.authoringBundleRoot = authoringBundleFile
+            doLast {
+                copy {
+                    from "${authoringBundleFile}/"
+                    into authoringBundleRoot
+                }
+            }
         } 
-    }  
-    if (project.hasProperty("enterprise")) {
-        dependsOn downloadLibssl
-        dependsOn expandLibssl 
-    }
+    }     
 }
 
 task prepareDeliveryBundle() {
@@ -182,14 +176,50 @@ task prepareDeliveryBundle() {
             dependsOn expandDeliveryBundle            
         } else if (file(deliveryBundleFile).file) {
             dependsOn expandDeliveryBundle
-        } else {
-            ext.deliveryBundleRoot = deliveryBundleFile
+        }  else {
+            doLast {
+                copy {
+                    from "${deliveryBundleFile}/"
+                    into deliveryBundleRoot
+                }
+            }
         } 
+    }
+}
+
+task copyAuthoringCustomWebapps() {
+    dependsOn prepareAuthoringBundle
+
+    if (project.hasProperty("authoringCustomWebapps")) {
+        doLast {
+            project.property('authoringCustomWebapps').split(',').each { war ->
+                copy {
+                    from war
+                    into "${authoringBundleRoot}/bin/apache-tomcat/webapps"
+                }
+            }
+        } 
+    }
+}
+
+task copyDeliveryCustomWebapps() {
+    dependsOn prepareDeliveryBundle
+
+    if (project.hasProperty("deliveryCustomWebapps")) {
+        doLast {
+            project.property('deliveryCustomWebapps').split(',').each { war ->
+                copy {
+                    from war
+                    into "${deliveryBundleRoot}/bin/apache-tomcat/webapps"
+                }
+            }
+        }
     }
 }
 
 task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tomcat Docker image") {
     dependsOn prepareAuthoringBundle
+    dependsOn copyAuthoringCustomWebapps
 
     def buildDir = "${imagesBuildDir}/authoring/tomcat"
 
@@ -204,7 +234,7 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
 
         if (project.hasProperty("enterprise")) {
             copy {
-                from "${downloadsDir}/libssl1.0.0/"
+                from "${tempDir}/libssl1.0.0/"
                 into "${buildDir}/lib"
             }
         }
@@ -216,14 +246,26 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
         }
 
         exec {
-            commandLine 'docker', 'build', '--target', buildTarget, '-t', "craftercms/authoring_tomcat:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringTomcatImageName}:${project.version}", buildDir
         }
     }
 }
 
+task buildAuthoringTomcatWithImageMagick(group: "Build", description: "Builds the Authoring Tomcat Docker image, including the ImageMagick binary") {
+    dependsOn buildAuthoringTomcat
+
+    def buildDir = "${imagesBuildDir}/authoring/tomcat"
+
+    doLast {
+        exec {
+            commandLine 'docker', 'build', '--target', 'imagemagick', '-t', "${project.authoringTomcatWithImageMagickImageName}:${project.version}", buildDir
+        }
+    }
+}
 
 task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds the Authoring Tomcat With Solr Support Docker image") {
     dependsOn prepareAuthoringBundle
+    dependsOn copyAuthoringCustomWebapps
 
     def buildDir = "${imagesBuildDir}/authoring/tomcat_with_solr_support"
 
@@ -238,7 +280,7 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
 
         if (project.hasProperty("enterprise")) {
             copy {
-                from "${downloadsDir}/libssl1.0.0/"
+                from "${tempDir}/libssl1.0.0/"
                 into "${buildDir}/lib"
             }
         }        
@@ -250,13 +292,14 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
         }
 
         exec {
-            commandLine 'docker', 'build', '--target', buildTarget, '-t', "craftercms/authoring_tomcat_solr_compatible:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringTomcatWithSolrSupportImageName}:${project.version}", buildDir
         }
     }
 }
 
 task buildDeliveryTomcat(group: "Build", description: "Builds the Delivery Tomcat Docker image") {
     dependsOn prepareDeliveryBundle
+    dependsOn copyDeliveryCustomWebapps
 
     def buildDir = "${imagesBuildDir}/delivery/tomcat"
 
@@ -276,13 +319,14 @@ task buildDeliveryTomcat(group: "Build", description: "Builds the Delivery Tomca
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/delivery_tomcat:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "${project.deliveryTomcatDockerImageName}:${project.version}", buildDir
         }
     }
 }
 
 task buildDeliveryTomcatWithSolrSupport(group: "Build", description: "Builds the Delivery Tomcat With Solr Support Docker image") {
     dependsOn prepareDeliveryBundle
+    dependsOn copyDeliveryCustomWebapps
 
     def buildDir = "${imagesBuildDir}/delivery/tomcat_with_solr_support"
 
@@ -302,7 +346,7 @@ task buildDeliveryTomcatWithSolrSupport(group: "Build", description: "Builds the
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/delivery_tomcat_solr_compatible:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "${project.deliveryTomcatWithSolrSupportImageName}:${project.version}", buildDir
         }
     }
 }
@@ -332,7 +376,7 @@ task buildDeployer(group: "Build", description: "Builds the Deployer Docker imag
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/deployer:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "${project.deployerImageName}:${project.version}", buildDir
         }
     }
 }
@@ -359,7 +403,7 @@ task buildProfile(group: "Build", description: "Builds the Profile Docker image"
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/profile:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "${project.profileImageName}:${project.version}", buildDir
         }
     }    
 }
@@ -377,7 +421,25 @@ task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server D
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/git_ssh_server:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "${project.gitSshServerImageName }:${project.version}", buildDir
+        }
+    }    
+}
+
+task buildGitHttpsServer(group: "Build", description: "Builds the Git HTTPS Server Docker image")  {
+    def buildDir = "${imagesBuildDir}/git_https_server"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/git_https_server/"
+            into buildDir
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "${project.gitHttpsServerImageName}:${project.version}", buildDir
         }
     }    
 }
@@ -395,43 +457,39 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "craftercms/logrotate:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "${project.logrotateImageName}:${project.version}", buildDir
         }
     }    
 }
 
-if (project.hasProperty("enterprise")) {
-
-    task buildStudioArbiter(group: "Build", description: "Builds the Studio Arbiter Docker image") {
-        dependsOn prepareAuthoringBundle
-        
-        def buildDir = "${imagesBuildDir}/arbiter"
-        
-        doFirst {
-            delete buildDir
+task buildStudioArbiter(group: "Build", description: "Builds the Studio Arbiter Docker image") {
+    dependsOn prepareAuthoringBundle
+    
+    def buildDir = "${imagesBuildDir}/arbiter"
+    
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${tempDir}/libssl1.0.0/"
+            into "${buildDir}/lib"
         }
-        doLast {
-            copy {
-                from "${downloadsDir}/libssl1.0.0/"
-                into "${buildDir}/lib"
-            }
-            
-            copy {
-                from "${authoringBundleRoot}/bin/studio-arbiter/studio-arbiter.jar"
-                into "${buildDir}/bin"
-            }
-            
-            copy {
-                from "${imagesDir}/arbiter"
-                into buildDir
-            }
-            
-            exec {
-                commandLine 'docker', 'build', '-t', "craftercms/studio-arbiter:${project.version}", buildDir
-            }
+        
+        copy {
+            from "${authoringBundleRoot}/bin/studio-arbiter/studio-arbiter.jar"
+            into "${buildDir}/bin"
+        }
+        
+        copy {
+            from "${imagesDir}/arbiter"
+            into buildDir
+        }
+        
+        exec {
+            commandLine 'docker', 'build', '-t', "${project.studioArbiterImageName}:${project.version}", buildDir
         }
     }
-
 }
 
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
@@ -439,8 +497,12 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildDeliveryTomcat
     dependsOn buildDeployer
     dependsOn buildGitSshServer
+    dependsOn buildGitHttpsServer
     if (project.hasProperty("enterprise")) {
-      dependsOn buildStudioArbiter
+        dependsOn buildStudioArbiter
+        if (project.hasProperty("imagemagick")) {
+            dependsOn buildAuthoringTomcatWithImageMagick
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -30,7 +30,7 @@ RUN mkdir -p /opt/crafter; \
 WORKDIR /opt/crafter
 
 # Create volumes
-VOLUME [ "./logs", "./temp" ]
+VOLUME [ "/opt/crafter/logs", "/opt/crafter/temp" ]
 
 # Add the Crafter user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
