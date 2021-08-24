@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM openjdk:8-jre-slim
+FROM openjdk:11-jre-slim
 
 VOLUME /opt/studio-arbiter/config
 VOLUME /opt/studio-arbiter/logs
