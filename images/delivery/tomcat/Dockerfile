@@ -71,6 +71,7 @@ RUN sed -i '/export CATALINA_HOME=$CRAFTER_BIN_DIR\/apache-tomcat/d' ./bin/craft
     sed -i 's/9192/9191/g' ./bin/crafter-setenv.sh; \
     sed -i 's/28020/27017/g' ./bin/crafter-setenv.sh; \
     sed -i 's/9080/8080/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9080/8080/g' ./bin/apache-tomcat/conf/server.xml; \
     sed -i 's/9443/8443/g' ./bin/crafter-setenv.sh; \
     sed -i 's/9009/8009/g' ./bin/crafter-setenv.sh; \
     sed -i 's/9005/8005/g' ./bin/crafter-setenv.sh;
