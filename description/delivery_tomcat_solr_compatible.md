@@ -6,6 +6,8 @@
 
 # Supported tags and respective Dockerfile links
 
+## Enterprise Edition
+
 * [3.1.17E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.17/images/delivery/tomcat/Dockerfile)
 
 * [3.1.16E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.16/images/delivery/tomcat/Dockerfile)

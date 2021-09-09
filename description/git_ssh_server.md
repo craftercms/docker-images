@@ -6,6 +6,8 @@
 
 # Supported tags and respective Dockerfile links
 
+## Community Edition
+
 * [3.1.17](https://github.com/craftercms/docker-images/blob/v3.1.17/images/git_ssh_server/Dockerfile)
 
 * [3.1.16](https://github.com/craftercms/docker-images/blob/v3.1.16/images/git_ssh_server/Dockerfile)
@@ -31,6 +33,34 @@
 * [3.1.6](https://github.com/craftercms/docker-images/blob/v3.1.6/images/git_ssh_server/Dockerfile)
 
 * [3.1.5](https://github.com/craftercms/docker-images/blob/v3.1.5/images/git_ssh_server/Dockerfile)
+
+## Enterprise Edition
+
+* [3.1.17E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.17/images/git_ssh_server/Dockerfile)
+
+* [3.1.16E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.16/images/git_ssh_server/Dockerfile)
+
+* [3.1.15E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.15/images/git_ssh_server/Dockerfile)
+
+* [3.1.14E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.14/images/git_ssh_server/Dockerfile)
+
+* [3.1.13E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.13/images/git_ssh_server/Dockerfile)
+
+* [3.1.12E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.12/images/git_ssh_server/Dockerfile)
+
+* [3.1.11E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.11/images/git_ssh_server/Dockerfile)
+
+* [3.1.10E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.10/images/git_ssh_server/Dockerfile)
+
+* [3.1.9E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.9/images/git_ssh_server/Dockerfile)
+
+* [3.1.8E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.8/images/git_ssh_server/Dockerfile)
+
+* [3.1.7E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.7/images/git_ssh_server/Dockerfile)
+
+* [3.1.6E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.6/images/git_ssh_server/Dockerfile)
+
+* [3.1.5E_BYOL](https://github.com/craftercms/docker-images/blob/v3.1.5/images/git_ssh_server/Dockerfile)
 
 # Quick reference (cont.)
 
