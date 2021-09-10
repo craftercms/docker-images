@@ -22,6 +22,8 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends curl; \
     apt-get install -y --no-install-recommends openssh-client; \
     apt-get install -y --no-install-recommends git; \
+    apt-get install -y --no-install-recommends vim; \
+    apt-get install -y --no-install-recommends nano; \
     rm -rf /var/lib/apt/lists/*;
 
 # Create folders and make CRAFTER_HOME the workdir
