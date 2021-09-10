@@ -217,7 +217,26 @@ task copyDeliveryCustomWebapps() {
     }
 }
 
+task buildBaseImage(group: "Build", description: "Builds the Crafter CMS Base Docker image") {
+    def buildDir = "${imagesBuildDir}/base"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/base/"
+            into buildDir
+        }
+
+        exec {
+            commandLine 'docker', 'build', '-t', "craftercms/base", buildDir
+        }
+    }
+}
+
 task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tomcat Docker image") {
+    dependsOn buildBaseImage
     dependsOn prepareAuthoringBundle
     dependsOn copyAuthoringCustomWebapps
 
@@ -298,6 +317,7 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
 }
 
 task buildDeliveryTomcat(group: "Build", description: "Builds the Delivery Tomcat Docker image") {
+    dependsOn buildBaseImage
     dependsOn prepareDeliveryBundle
     dependsOn copyDeliveryCustomWebapps
 
