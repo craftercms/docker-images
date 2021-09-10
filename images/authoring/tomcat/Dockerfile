@@ -28,6 +28,8 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends rsync; \
     apt-get install -y --no-install-recommends iproute2; \
     apt-get install -y --no-install-recommends procps; \
+    apt-get install -y --no-install-recommends vim; \
+    apt-get install -y --no-install-recommends nano; \
     rm -rf /var/lib/apt/lists/*;
 
 # Create folders and make CRAFTER_HOME the workdir
