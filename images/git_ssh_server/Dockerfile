@@ -14,7 +14,7 @@
 FROM alpine:3.10 as main
 
 # Install dependencies
-RUN apk add --no-cache bash shadow openssh git su-exec
+RUN apk add --no-cache bash shadow openssh git su-exec vim nano
 
 # Create folders for crafter user
 RUN mkdir -p /opt/crafter/data
@@ -25,7 +25,7 @@ VOLUME [ "/opt/crafter/data" ]
 # - Add the Crafter user
 # - Make git-shell the default shell of the crafter user
 # - Remove root default shell access
-# - Enable public key auth and disable other type of auth. Also set the host key algorithms to just RSA to avoid issues 
+# - Enable public key auth and disable other type of auth. Also set the host key algorithms to just RSA to avoid issues
 #   with JGit/JSch
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
     usermod -p '*' crafter; \
