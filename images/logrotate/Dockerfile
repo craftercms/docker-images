@@ -20,7 +20,7 @@ ENV CRON_SCHEDULE='0 0 * * *' \
     LOGROTATE_SIZE='10M'
 
 # Install dependencies
-RUN apk add --no-cache shadow logrotate tini gettext libintl
+RUN apk add --no-cache bash shadow logrotate tini gettext libintl vim nano
 
 # Add the Crafter user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter

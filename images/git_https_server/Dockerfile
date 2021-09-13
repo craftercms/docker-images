@@ -14,7 +14,7 @@
 FROM httpd:2.4-alpine
 
 # Install dependencies
-RUN apk add --no-cache bash shadow git git-daemon su-exec
+RUN apk add --no-cache bash shadow git git-daemon su-exec vim nano
 
 # Create folders for crafter user
 RUN mkdir -p /opt/crafter/data

@@ -14,6 +14,15 @@
 
 FROM openjdk:8-jre-slim
 
+# Install dependencies
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends vim; \
+    apt-get install -y --no-install-recommends nano; \
+    rm -rf /var/lib/apt/lists/*;
+
 VOLUME /opt/studio-arbiter/config
 VOLUME /opt/studio-arbiter/logs
 

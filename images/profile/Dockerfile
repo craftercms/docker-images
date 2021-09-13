@@ -19,6 +19,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update; \
     apt-get install -y gosu; \
+    apt-get install -y --no-install-recommends vim; \
+    apt-get install -y --no-install-recommends nano; \
     rm -rf /var/lib/apt/lists/*;
 
 # Create folders and make CRAFTER_HOME the workdir
