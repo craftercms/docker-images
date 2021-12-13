@@ -462,36 +462,6 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
     }
 }
 
-task buildStudioArbiter(group: "Build", description: "Builds the Studio Arbiter Docker image") {
-    dependsOn prepareAuthoringBundle
-
-    def buildDir = "${imagesBuildDir}/arbiter"
-
-    doFirst {
-        delete buildDir
-    }
-    doLast {
-        copy {
-            from "${tempDir}/libssl1.0.0/"
-            into "${buildDir}/lib"
-        }
-
-        copy {
-            from "${authoringBundleRoot}/bin/studio-arbiter/studio-arbiter.jar"
-            into "${buildDir}/bin"
-        }
-
-        copy {
-            from "${imagesDir}/arbiter"
-            into buildDir
-        }
-
-        exec {
-            commandLine 'docker', 'build', '-t', "${project.studioArbiterImageName}:${project.version}", buildDir
-        }
-    }
-}
-
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildAuthoringTomcat
     dependsOn buildDeliveryTomcat
@@ -499,7 +469,6 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildGitSshServer
     dependsOn buildGitHttpsServer
     if (project.hasProperty("enterprise")) {
-        dependsOn buildStudioArbiter
         if (project.hasProperty("imagemagick")) {
             dependsOn buildAuthoringTomcatWithImageMagick
         }
