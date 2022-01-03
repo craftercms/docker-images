@@ -12,7 +12,6 @@ Builds the Crafter CMS Docker images, including:
 8. Git HTTPS server
 9. Profile
 10. Logrotate
-11. Studio Arbiter (Enterprise only)
 
 # Pre-requisites
 
@@ -35,7 +34,6 @@ Builds the Crafter CMS Docker images, including:
 - **buildGitHttpsServer:** Builds the Git SSH Server Docker image
 - **buildProfile:** Builds the Profile Docker image
 - **buildLogrotate:** Builds the Logrotate Docker image
-- **buildStudioArbiter:** Builds the Studio Arbiter Docker image
 
 # Gradle parameters
 
@@ -49,7 +47,6 @@ Builds the Crafter CMS Docker images, including:
 - **gitSshServerImageName:** Name to use when building the Git SSH server image (default is `craftercms/git_ssh_server`).
 - **gitHttpsServerImageName:** Name to use when building the Git HTTPS server image (default is `craftercms/git_https_server`).
 - **logrotateImageName:** Name to use when building the Logrotate image (default is `craftercms/logrotate`).
-- **studioArbiterImageName:** Name to use when building the Studio Arbiter image (default is `craftercms/studio-arbiter`).
 - **tag:** The tag used on image build, typically will be the version number (e.g. `4.0.0`).
 - **enterprise:** If the enterprise edition and enterprise only images should be built.
 - **imagemagick:** If the Authoring Tomcat with Imagemagick image should be built.
