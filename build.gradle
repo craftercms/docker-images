@@ -29,7 +29,13 @@ plugins {
     id "de.undercouch.download" version "4.0.4"
 }
 
-project.version = project.hasProperty("tag") ? project.property("tag") : "4.0.0-SNAPSHOT" // craftercms version flag
+if (project.hasProperty("tag")) {
+    project.version = project.property("tag")
+else if (project.hasProperty("enterprise")) {
+    project.version = "4.0.0E-BETA" // craftercms enterprise version flag
+} else {
+    project.version = "4.0.0-SNAPSHOT" // craftercms version flag
+}
 
 ext {
     imagesDir = "${projectDir}/images"
@@ -38,42 +44,44 @@ ext {
 
     libsslUrl = "https://downloads.craftercms.org/ent/lib/libssl1.0.0.tar.gz"
 
+    downloadsRootFolder = "${project.version}"
+    authoringBuildTarget = 'main'
+    
+    if (project.hasProperty("enterprise")) {
+        downloadsRootFolder = "ent/${project.version}"
+        authoringBuildTarget = 'enterprise'
+    }
+
     if (project.hasProperty("authoringBundle")) {
         if (project.property("authoringBundle") ==~ /^https?:\/\/.+$/) {
             authoringBundleUrl = project.property("authoringBundle")
             authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleUrl)
-            authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter-authoring"
+            authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
         } else {
             authoringBundleUrl = ""
             authoringBundleFile = project.property("authoringBundle")
-            authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleFile) + "/crafter-authoring"
+            authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleFile) + "/crafter"
         }
     } else {
-        authoringBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-authoring-${project.version}.tar.gz"
+        authoringBundleUrl = "https://downloads.craftercms.org/${downloadsRootFolder}/social/crafter-cms-authoring-${project.version}-linux-x86_64.tar.gz"
         authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleUrl)
-        authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter-authoring"
+        authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
     }
 
     if (project.hasProperty("deliveryBundle")) {
         if (project.property("deliveryBundle") ==~ /^https?:\/\/.+$/) {
             deliveryBundleUrl = project.property("deliveryBundle")
             deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
-            deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter-delivery"
+            deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
         } else {
             deliveryBundleUrl = ""
             deliveryBundleFile = project.property("deliveryBundle")
-            deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile) + "/crafter-delivery"
+            deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile) + "/crafter"
         }
     } else {
-        deliveryBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-delivery-${project.version}.tar.gz"
+        deliveryBundleUrl = "https://downloads.craftercms.org/${downloadsRootFolder}/social/crafter-cms-delivery-${project.version}-linux-x86_64.tar.gz"
         deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
-        deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter-delivery"
-    }
-
-    authoringBuildTarget = 'main'
-
-    if (project.hasProperty("enterprise")) {
-        authoringBuildTarget = 'enterprise'
+        deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
     }
 
     defaultTomcatBinExcludes = [
@@ -90,7 +98,7 @@ ext {
         "apache-tomcat/webapps/crafter-profile*",
         "apache-tomcat/webapps/ROOT",
         "apache-tomcat/webapps/studio",
-        "**/*.pid"
+        "**/*.pid"   
     ]
 
     tomcatWithCrafterSearchBinExcludes = [
@@ -107,20 +115,20 @@ ext {
         "apache-tomcat/webapps/crafter-profile*",
         "apache-tomcat/webapps/ROOT",
         "apache-tomcat/webapps/studio",
-        "**/*.pid"
+        "**/*.pid"   
     ]
 }
 
 task downloadLibssl(type: Download) {
     src libsslUrl
     overwrite false
-    dest "${tempDir}/libssl1.0.0.tar.gz"
+    dest "${tempDir}/libssl1.0.0.tar.gz" 
 }
 
 task downloadAuthoringBundle(type: Download) {
     src authoringBundleUrl
     overwrite false
-    dest authoringBundleFile
+    dest authoringBundleFile 
 }
 
 task downloadDeliveryBundle(type: Download) {
@@ -147,15 +155,15 @@ task expandDeliveryBundle(type: Copy) {
     into "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile)
 }
 
-task prepareAuthoringBundle() {
+task prepareAuthoringBundle() { 
     if (project.hasProperty("enterprise")) {
         dependsOn downloadLibssl
-        dependsOn expandLibssl
+        dependsOn expandLibssl 
     }
     if (!file(authoringBundleRoot).exists()) {
         if (authoringBundleUrl) {
             dependsOn downloadAuthoringBundle
-            dependsOn expandAuthoringBundle
+            dependsOn expandAuthoringBundle            
         } else if (file(authoringBundleFile).file) {
             dependsOn expandAuthoringBundle
         } else {
@@ -165,15 +173,15 @@ task prepareAuthoringBundle() {
                     into authoringBundleRoot
                 }
             }
-        }
-    }
+        } 
+    }     
 }
 
 task prepareDeliveryBundle() {
     if (!file(deliveryBundleRoot).exists()) {
         if (deliveryBundleUrl) {
             dependsOn downloadDeliveryBundle
-            dependsOn expandDeliveryBundle
+            dependsOn expandDeliveryBundle            
         } else if (file(deliveryBundleFile).file) {
             dependsOn expandDeliveryBundle
         }  else {
@@ -183,7 +191,7 @@ task prepareDeliveryBundle() {
                     into deliveryBundleRoot
                 }
             }
-        }
+        } 
     }
 }
 
@@ -198,7 +206,7 @@ task copyAuthoringCustomWebapps() {
                     into "${authoringBundleRoot}/bin/apache-tomcat/webapps"
                 }
             }
-        }
+        } 
     }
 }
 
@@ -283,7 +291,7 @@ task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds th
                 from "${tempDir}/libssl1.0.0/"
                 into "${buildDir}/lib"
             }
-        }
+        }        
 
         copy {
             from "${authoringBundleRoot}/bin/"
@@ -366,7 +374,7 @@ task buildDeployer(group: "Build", description: "Builds the Deployer Docker imag
         }
         copy {
             from "${deliveryBundleRoot}/bin/"
-            into "${buildDir}/bin"
+            into "${buildDir}/bin"     
             exclude "migration"
             exclude "upgrade"
             exclude "apache-tomcat"
@@ -405,7 +413,7 @@ task buildProfile(group: "Build", description: "Builds the Profile Docker image"
         exec {
             commandLine 'docker', 'build', '-t', "${project.profileImageName}:${project.version}", buildDir
         }
-    }
+    }    
 }
 
 task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server Docker image")  {
@@ -423,7 +431,7 @@ task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server D
         exec {
             commandLine 'docker', 'build', '-t', "${project.gitSshServerImageName }:${project.version}", buildDir
         }
-    }
+    }    
 }
 
 task buildGitHttpsServer(group: "Build", description: "Builds the Git HTTPS Server Docker image")  {
@@ -441,7 +449,7 @@ task buildGitHttpsServer(group: "Build", description: "Builds the Git HTTPS Serv
         exec {
             commandLine 'docker', 'build', '-t', "${project.gitHttpsServerImageName}:${project.version}", buildDir
         }
-    }
+    }    
 }
 
 task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker image")  {
@@ -459,7 +467,7 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
         exec {
             commandLine 'docker', 'build', '-t', "${project.logrotateImageName}:${project.version}", buildDir
         }
-    }
+    }    
 }
 
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
