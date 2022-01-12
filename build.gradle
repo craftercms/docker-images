@@ -89,7 +89,6 @@ ext {
         "upgrade",
         "crafter-deployer",
         "elasticsearch",
-        "solr",
         "dbms",
         "cli",
         "mongodb",
@@ -97,26 +96,6 @@ ext {
         "apache-tomcat/work/**",
         "apache-tomcat/temp/**",
         "apache-tomcat/webapps/crafter-search*",
-        "apache-tomcat/webapps/crafter-social*",
-        "apache-tomcat/webapps/crafter-profile*",
-        "apache-tomcat/webapps/ROOT",
-        "apache-tomcat/webapps/studio",
-        "**/*.pid"   
-    ]
-
-    tomcatWithCrafterSearchBinExcludes = [
-        "migration",
-        "upgrade",
-        "crafter-deployer",
-        "elasticsearch",
-        "solr",
-        "dbms",
-        "cli",
-        "mongodb",
-        "crafter-cli",
-        "apache-tomcat/work/**",
-        "apache-tomcat/temp/**",
-        "apache-tomcat/webapps/crafter-search",
         "apache-tomcat/webapps/crafter-social*",
         "apache-tomcat/webapps/crafter-profile*",
         "apache-tomcat/webapps/ROOT",
@@ -277,40 +256,6 @@ task buildAuthoringTomcatWithImageMagick(group: "Build", description: "Builds th
     }
 }
 
-task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds the Authoring Tomcat With Solr Support Docker image") {
-    dependsOn prepareAuthoringBundle
-    dependsOn copyAuthoringCustomWebapps
-
-    def buildDir = "${imagesBuildDir}/authoring/tomcat_with_solr_support"
-
-    doFirst {
-        delete buildDir
-    }
-    doLast {
-        copy {
-            from "${imagesDir}/authoring/tomcat/"
-            into buildDir
-        }
-
-        if (project.hasProperty("enterprise")) {
-            copy {
-                from "${tempDir}/libssl1.0.0/"
-                into "${buildDir}/lib"
-            }
-        }        
-
-        copy {
-            from "${authoringBundleRoot}/bin/"
-            into "${buildDir}/bin"
-            exclude tomcatWithCrafterSearchBinExcludes
-        }
-
-        exec {
-            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringTomcatWithSolrSupportImageName}:${project.version}", buildDir
-        }
-    }
-}
-
 task buildDeliveryTomcat(group: "Build", description: "Builds the Delivery Tomcat Docker image") {
     dependsOn prepareDeliveryBundle
     dependsOn copyDeliveryCustomWebapps
@@ -333,34 +278,7 @@ task buildDeliveryTomcat(group: "Build", description: "Builds the Delivery Tomca
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "${project.deliveryTomcatDockerImageName}:${project.version}", buildDir
-        }
-    }
-}
-
-task buildDeliveryTomcatWithSolrSupport(group: "Build", description: "Builds the Delivery Tomcat With Solr Support Docker image") {
-    dependsOn prepareDeliveryBundle
-    dependsOn copyDeliveryCustomWebapps
-
-    def buildDir = "${imagesBuildDir}/delivery/tomcat_with_solr_support"
-
-    doFirst {
-        delete buildDir
-    }
-    doLast {
-        copy {
-            from "${imagesDir}/delivery/tomcat/"
-            into buildDir
-        }
-
-        copy {
-            from "${deliveryBundleRoot}/bin/"
-            into "${buildDir}/bin"
-            exclude tomcatWithCrafterSearchBinExcludes
-        }
-
-        exec {
-            commandLine 'docker', 'build', '-t', "${project.deliveryTomcatWithSolrSupportImageName}:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "${project.deliveryTomcatImageName}:${project.version}", buildDir
         }
     }
 }
@@ -385,7 +303,6 @@ task buildDeployer(group: "Build", description: "Builds the Deployer Docker imag
             exclude "upgrade"
             exclude "apache-tomcat"
             exclude "elasticsearch"
-            exclude "solr"
             exclude "**/*.pid"
         }
 
@@ -489,14 +406,8 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
     }
 }
 
-task buildTomcatImagesWithSolrSupport(group: "Build", description: "Builds Tomcat Docker images with Solr support") {
-    dependsOn buildAuthoringTomcatWithSolrSupport
-    dependsOn buildDeliveryTomcatWithSolrSupport
-}
-
 task build(group: "Build", description: "Builds all Docker images") {
     dependsOn buildMainImages
-    dependsOn buildTomcatImagesWithSolrSupport
     dependsOn buildProfile
     dependsOn buildLogrotate
 }
