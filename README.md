@@ -4,14 +4,12 @@ Builds the Crafter CMS Docker images, including:
 
 1. Authoring Tomcat
 2. Authoring Tomcat with Image Magick
-3. Authoring Tomcat with Solr support
-4. Delivery Tomcat
-5. Delivery Tomcat with Solr support
-6. Deployer
-7. Git SSH server
-8. Git HTTPS server
-9. Profile
-10. Logrotate
+3. Delivery Tomcat
+4. Deployer
+5. Git SSH server
+6. Git HTTPS server
+7. Profile
+8. Logrotate
 
 # Pre-requisites
 
@@ -23,12 +21,9 @@ Builds the Crafter CMS Docker images, including:
 - **clean:** Deletes build folder
 - **build:** Builds all Docker images
 - **buildMainImages:** Builds main Docker images
-- **buildTomcatImagesWithSolrSupport:** Builds Tomcat Docker images with Solr support
 - **buildAuthoringTomcat:** Builds the Authoring Tomcat Docker image
 - **buildAuthoringTomcatWithImageMagick:** Build the Authoring Tomcat with Image Magick Docker image
-- **buildAuthoringTomcatWithSolrSupport:** Builds the Authoring Tomcat With Solr Support Docker image
 - **buildDeliveryTomcat:** Builds the Delivery Tomcat Docker image
-- **buildDeliveryTomcatWithSolrSupport:** Builds the Delivery Tomcat With Solr Support Docker image
 - **buildDeployer:** Builds the Deployer Docker image
 - **buildGitSshServer:** Builds the Git SSH Server Docker image
 - **buildGitHttpsServer:** Builds the Git SSH Server Docker image
@@ -39,9 +34,7 @@ Builds the Crafter CMS Docker images, including:
 
 - **authoringTomcatImageName**: Name to use when building the Authoring Tomcat image (default is `craftercms/authoring_tomcat`).
 - **authoringTomcatWithImageMagickImageName:** Name to use when building the Authoring Tomcat with Imagemagick image (default is `craftercms/authoring_tomcat_with_imagemagick`).
-- **authoringTomcatWithSolrSupportImageName:** Name to use when building the Authoring Tomcat with Solr support image (default is `craftercms/authoring_tomcat_solr_compatible`).
-- **deliveryTomcatDockerImageName:** Name to use when building the Delivery Tomcat image (default is `craftercms/delivery_tomcat`).
-- **deliveryTomcatWithSolrSupportImageName:** Name to use when building the Delivery Tomcat with Solr support image (default is `craftercms/delivery_tomcat_solr_compatible`).
+- **deliveryTomcatImageName:** Name to use when building the Delivery Tomcat image (default is `craftercms/delivery_tomcat`).
 - **deployerImageName:** Name to use when building the Deployer image (default is `craftercms/deployer`).
 - **profileImageName:** Name to use when building the Profile image (default is `craftercms/profile`).
 - **gitSshServerImageName:** Name to use when building the Git SSH server image (default is `craftercms/git_ssh_server`).
@@ -74,10 +67,6 @@ Builds the Crafter CMS Docker images, including:
 - Build images using expanded bundle directories:
 ```bash
     ./gradlew build -PauthoringBundle=/home/jdoe/code/craftercms/crafter-authoring -PdeliveryBundle=/home/jdoe/code/craftercms/bundles/crafter-delivery -Ptag=4.0.0-SNAPSHOT
-```
-- Build only the main images and the Tomcat images with Solr support:
-```bash
-    ./gradlew buildMainImages buildTomcatImagesWithSolrSupport
 ```
 - Build the enterprise images and the Authoring Tomcat with Imagemagick image
 ```bash
