@@ -32,9 +32,9 @@ plugins {
 if (project.hasProperty("tag")) {
     project.version = project.property("tag")
 } else if (project.hasProperty("enterprise")) {
-    project.version = "4.0.0E-BETA" // craftercms enterprise version flag
+    project.version = "4.0.0-rc1E" // craftercms enterprise version flag
 } else {
-    project.version = "4.0.0-SNAPSHOT" // craftercms version flag
+    project.version = "4.0.0-rc1" // craftercms version flag
 }
 
 ext {
