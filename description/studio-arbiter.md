@@ -46,8 +46,7 @@
 
 # What is studio-arbiter?
 
-`studio-arbiter` is one components of Crafter CMS. Refer to [Crafter CMS Architecture](https://docs.craftercms.org/en/3.1/developers/architecture.html) to learn more.
-
+`studio-arbiter` is a component of the Crafter Authoring module, only needed when configuring an Authoring cluster (two Authoring nodes and one Arbiter node). Refer to [Crafter CMS Architecture](https://docs.craftercms.org/en/3.1/developers/architecture.html) to learn more.
 
 # How to use this image
 
