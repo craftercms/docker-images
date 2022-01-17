@@ -2,7 +2,7 @@
 
 * Maintained by: [Crafter CMS Community](https://github.com/craftercms)
 
-* Where to get help: [Crafter CMS Slack Community](https://craftercms.slack.com/join/shared_invite/enQtNDg0NzI3NzA0NjMwLWZmMGQzMDViMzA5NDE1YjMzM2M1N2JlOWJlZDA1MjA2MGJlZjgzNDVlMmI5ODQxNmNjMWQ3NzA5ZWNkN2UxOWE), [Q&A at StackOverflow](https://stackoverflow.com/questions/tagged/crafter-cms), [Support Forums](https://groups.google.com/forum/#!forum/craftercms), [IRC](https://webchat.freenode.net/#craftercms) or point your IRC client to irc.freenode.net channel #craftercms.
+* Where to get help: [Crafter CMS Slack Community](https://craftercms.slack.com/join/shared_invite/enQtNDg0NzI3NzA0NjMwLWZmMGQzMDViMzA5NDE1YjMzM2M1N2JlOWJlZDA1MjA2MGJlZjgzNDVlMmI5ODQxNmNjMWQ3NzA5ZWNkN2UxOWE), [Q&A at StackOverflow](https://stackoverflow.com/questions/tagged/crafter-cms), [Support Forums](https://groups.google.com/forum/#!forum/craftercms).
 
 # Supported tags and respective Dockerfile links
 
@@ -50,8 +50,7 @@
 
 # What is authoring_tomcat_solr_compatible?
 
-`authoring_tomcat_solr_compatible` is one components of Crafter Authoring module which runs a Tomcat server. Refer to [Crafter CMS Architecture](https://docs.craftercms.org/en/3.1/developers/architecture.html) to learn more.
-
+`authoring_tomcat_solr_compatible` is the Tomcat server component of the Crafter CMS Authoring module, which includes the Crafter Studio, Crafter Engine Preview Server, and the Crafter Search (for Solr compatibility) webapps. Refer to [Crafter CMS Architecture](https://docs.craftercms.org/en/3.1/developers/architecture.html) to learn more.
 
 # How to use this image
 

@@ -2,7 +2,7 @@
 
 * Maintained by: [Crafter CMS Community](https://github.com/craftercms)
 
-* Where to get help: [Crafter CMS Slack Community](https://craftercms.slack.com/join/shared_invite/enQtNDg0NzI3NzA0NjMwLWZmMGQzMDViMzA5NDE1YjMzM2M1N2JlOWJlZDA1MjA2MGJlZjgzNDVlMmI5ODQxNmNjMWQ3NzA5ZWNkN2UxOWE), [Q&A at StackOverflow](https://stackoverflow.com/questions/tagged/crafter-cms), [Support Forums](https://groups.google.com/forum/#!forum/craftercms), [IRC](https://webchat.freenode.net/#craftercms) or point your IRC client to irc.freenode.net channel #craftercms.
+* Where to get help: [Crafter CMS Slack Community](https://craftercms.slack.com/join/shared_invite/enQtNDg0NzI3NzA0NjMwLWZmMGQzMDViMzA5NDE1YjMzM2M1N2JlOWJlZDA1MjA2MGJlZjgzNDVlMmI5ODQxNmNjMWQ3NzA5ZWNkN2UxOWE), [Q&A at StackOverflow](https://stackoverflow.com/questions/tagged/crafter-cms), [Support Forums](https://groups.google.com/forum/#!forum/craftercms).
 
 # Supported tags and respective Dockerfile links
 
@@ -78,8 +78,7 @@
 
 # What is deployer?
 
-`deployer` is one components of Crafter CMS. Refer to [Crafter CMS Architecture](https://docs.craftercms.org/en/3.1/developers/architecture.html) to learn more.
-
+`deployer` is the Spring Boot app component of both Crafter CMS Authoring and Delivery modules, that is used to deploy file changes and index to Elasticsearch or Solr search engines. Refer to [Crafter CMS Architecture](https://docs.craftercms.org/en/3.1/developers/architecture.html) to learn more.
 
 # How to use this image
 
