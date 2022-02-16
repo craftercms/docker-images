@@ -325,6 +325,8 @@ task buildProfile(group: "Build", description: "Builds the Profile Docker image"
     }
     doLast {
         copy {
+            duplicatesStrategy = 'include'
+
             from "${imagesBuildDir}/delivery/tomcat/"
             from "${imagesDir}/profile/"
             into buildDir
