@@ -66,7 +66,7 @@ if [ -d $TRUSTED_CERTS_DIR ]; then
         cert_filename_no_ext="${cert_filename%.*}"
 
         echo "Importing trusted certificate $cert_file"
-        keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -alias "$cert_filename_no_ext" -file "$cert_file"
+        keytool -importcert -cacerts -keypass changeit -storepass changeit -noprompt -alias "$cert_filename_no_ext" -file "$cert_file"
     done
 fi
 
