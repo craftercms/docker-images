@@ -32,6 +32,7 @@ if [ -d $CRAFTER_BACKUPS_DIR ]; then
     chown -R crafter:crafter "$CRAFTER_BACKUPS_DIR"
 fi
 
+chown -R crafter:crafter "$CRAFTER_BIN_DIR/grapes"
 chown -R crafter:crafter "$CRAFTER_LOGS_DIR"
 chown -R crafter:crafter "$CRAFTER_DATA_DIR"
 chown -R crafter:crafter "$CRAFTER_TEMP_DIR"
