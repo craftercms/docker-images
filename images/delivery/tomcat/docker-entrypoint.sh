@@ -32,6 +32,7 @@ if [ -d $CRAFTER_BACKUPS_DIR ]; then
     chown -R crafter:crafter "$CRAFTER_BACKUPS_DIR"
 fi
 
+chown -R crafter:crafter "$CRAFTER_BIN_DIR/grapes"
 chown -R crafter:crafter "$CRAFTER_LOGS_DIR"
 chown -R crafter:crafter "$CRAFTER_DATA_DIR"
 chown -R crafter:crafter "$CRAFTER_TEMP_DIR"
@@ -62,7 +63,7 @@ if [ -d $TRUSTED_CERTS_DIR ]; then
         cert_filename_no_ext="${cert_filename%.*}"
 
         echo "Importing trusted certificate $cert_file"
-        keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -alias "$cert_filename_no_ext" -file "$cert_file"
+        keytool -importcert -cacerts -keypass changeit -storepass changeit -noprompt -alias "$cert_filename_no_ext" -file "$cert_file"
     done
 fi
 
