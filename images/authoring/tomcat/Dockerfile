@@ -45,12 +45,12 @@ WORKDIR /opt/crafter
 # Create volumes
 VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
 
-# Add the Crafter user
+# Add the Crafter user and the default Git user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
     chown -R crafter:crafter .; \
     chown -R crafter:crafter /usr/local/tomcat; \
-    git config --global user.email evalgit@example.com; \
-    git config --global user.name git_repo_user
+    gosu crafter git config --global user.email "evalgit@example.com"; \
+    gosu crafter git config --global user.name "git_repo_user"
 
 # Copy bin folder
 COPY --chown=crafter:crafter ./bin ./bin/
