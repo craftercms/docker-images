@@ -28,15 +28,17 @@ export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
+chown_dir "$CRAFTER_LOGS_DIR"
+chown_dir "$CRAFTER_TEMP_DIR"
+
 if [ ! -d $CATALINA_LOGS_DIR ]; then
     mkdir -p $CATALINA_LOGS_DIR
+    chown_dir "$CATALINA_LOGS_DIR"
 fi
 if [ ! -d $CATALINA_TMPDIR ]; then
     mkdir -p $CATALINA_TMPDIR
+    chown_dir "$CATALINA_TMPDIR"
 fi
-
-chown_dir "$CRAFTER_LOGS_DIR"
-chown_dir "$CRAFTER_TEMP_DIR"
 
 # Export the crafter HOME dir
 export HOME=/home/crafter
