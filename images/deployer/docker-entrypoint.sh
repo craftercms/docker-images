@@ -28,14 +28,15 @@ export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
-if [ ! -d $DEPLOYER_LOGS_DIR ]; then
-    mkdir -p $DEPLOYER_LOGS_DIR;
-fi
-
 # Fix for volume permissions
 chown_dir "$CRAFTER_LOGS_DIR"
 chown_dir "$CRAFTER_DATA_DIR"
 chown_dir "$CRAFTER_TEMP_DIR"
+
+if [ ! -d $DEPLOYER_LOGS_DIR ]; then
+    mkdir -p $DEPLOYER_LOGS_DIR;
+    chown_dir "$DEPLOYER_LOGS_DIR"
+fi
 
 # Export the crafter HOME dir
 export HOME=/home/crafter
