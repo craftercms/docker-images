@@ -29,13 +29,6 @@ export CRAFTER_BACKUPS_DIR=$CRAFTER_HOME/backups
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
-if [ ! -d $CATALINA_LOGS_DIR ]; then
-    mkdir -p $CATALINA_LOGS_DIR
-fi
-if [ ! -d $CATALINA_TMPDIR ]; then
-    mkdir -p $CATALINA_TMPDIR
-fi
-
 # Fix for volume permissions
 if [ -d $MARIADB_HOME ]; then
     chown_dir "$MARIADB_HOME"
@@ -48,6 +41,15 @@ fi
 chown_dir "$CRAFTER_LOGS_DIR"
 chown_dir "$CRAFTER_DATA_DIR"
 chown_dir "$CRAFTER_TEMP_DIR"
+
+if [ ! -d $CATALINA_LOGS_DIR ]; then
+    mkdir -p $CATALINA_LOGS_DIR
+    chown_dir "$CATALINA_LOGS_DIR"
+fi
+if [ ! -d $CATALINA_TMPDIR ]; then
+    mkdir -p $CATALINA_TMPDIR
+    chown_dir "$CATALINA_TMPDIR"
+fi
 
 # Export the crafter HOME dir
 export HOME=/home/crafter
