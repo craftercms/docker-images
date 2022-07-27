@@ -14,20 +14,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+chown_dir() {
+  local dir="$1"
+  owner=$(stat --format '%U:%G' "$dir")
+  if [ "$owner" != "crafter:crafter" ]; then
+    echo "The owner of $dir is $owner. Changing to crafter:crafter"
+    chown -R crafter:crafter "$dir"
+  fi
+}
+
 export CRAFTER_HOME=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
+chown_dir "$CRAFTER_LOGS_DIR"
+chown_dir "$CRAFTER_TEMP_DIR"
+
 if [ ! -d $CATALINA_LOGS_DIR ]; then
     mkdir -p $CATALINA_LOGS_DIR
+    chown_dir "$CATALINA_LOGS_DIR"
 fi
 if [ ! -d $CATALINA_TMPDIR ]; then
     mkdir -p $CATALINA_TMPDIR
+    chown_dir "$CATALINA_TMPDIR"
 fi
-
-chown -R crafter:crafter "$CRAFTER_LOGS_DIR"
-chown -R crafter:crafter "$CRAFTER_TEMP_DIR"
 
 # Export the crafter HOME dir
 export HOME=/home/crafter

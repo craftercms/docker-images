@@ -14,32 +14,43 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+chown_dir() {
+  local dir="$1"
+  owner=$(stat --format '%U:%G' "$dir")
+  if [ "$owner" != "crafter:crafter" ]; then
+    echo "The owner of $dir is $owner. Changing to crafter:crafter"
+    chown -R crafter:crafter "$dir"
+  fi
+}
+
 export CRAFTER_HOME=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 export CRAFTER_BACKUPS_DIR=$CRAFTER_HOME/backups
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
-if [ ! -d $CATALINA_LOGS_DIR ]; then
-    mkdir -p $CATALINA_LOGS_DIR
-fi
-if [ ! -d $CATALINA_TMPDIR ]; then
-    mkdir -p $CATALINA_TMPDIR
-fi
-
 # Fix for volume permissions
 if [ -d $MARIADB_HOME ]; then
-    chown -R crafter:crafter "$MARIADB_HOME"
+    chown_dir "$MARIADB_HOME"
 fi
 
 if [ -d $CRAFTER_BACKUPS_DIR ]; then
-    chown -R crafter:crafter "$CRAFTER_BACKUPS_DIR"
+    chown_dir "$CRAFTER_BACKUPS_DIR"
 fi
 
-chown -R crafter:crafter "$CRAFTER_BIN_DIR/grapes"
-chown -R crafter:crafter "$CRAFTER_LOGS_DIR"
-chown -R crafter:crafter "$CRAFTER_DATA_DIR"
-chown -R crafter:crafter "$CRAFTER_TEMP_DIR"
+chown_dir "$CRAFTER_BIN_DIR/grapes"
+chown_dir "$CRAFTER_LOGS_DIR"
+chown_dir "$CRAFTER_DATA_DIR"
+chown_dir "$CRAFTER_TEMP_DIR"
+
+if [ ! -d $CATALINA_LOGS_DIR ]; then
+    mkdir -p $CATALINA_LOGS_DIR
+    chown_dir "$CATALINA_LOGS_DIR"
+fi
+if [ ! -d $CATALINA_TMPDIR ]; then
+    mkdir -p $CATALINA_TMPDIR
+    chown_dir "$CATALINA_TMPDIR"
+fi
 
 # Export the crafter HOME dir
 export HOME=/home/crafter
@@ -52,7 +63,7 @@ if [ -d $MOUNTED_SSH_DIR ]; then
     mkdir -p $USER_HOME_SSH_DIR
     cp -L $MOUNTED_SSH_DIR/* $USER_HOME_SSH_DIR
 
-    chown -R crafter:crafter "$USER_HOME_SSH_DIR" 
+    chown_dir "$USER_HOME_SSH_DIR"
     chmod 700 $USER_HOME_SSH_DIR
     chmod 600 $USER_HOME_SSH_DIR/*
     chmod 644 $USER_HOME_SSH_DIR/*.pub
