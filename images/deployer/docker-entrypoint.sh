@@ -23,6 +23,21 @@ chown_dir() {
   fi
 }
 
+host_keyscan() {
+    if [ ! -d $CRAFTER_SSH_CONFIG ]; then
+        mkdir -p $CRAFTER_SSH_CONFIG
+        chown_dir "$CRAFTER_SSH_CONFIG"
+    fi
+
+    DOMAINS=${SSH_KEYSCAN_DOMAINS:-"bitbucket.com,gitlab.com,github.com"}
+    IFS=',' read -ra LIST <<< "$DOMAINS"
+
+    for domain in "${LIST[@]}"; do
+        echo "ssh-keyscan for domain: $domain"
+        ssh-keyscan "$domain" >> "${CRAFTER_SSH_CONFIG}/known_hosts"
+    done
+}
+
 export CRAFTER_HOME=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 
@@ -54,6 +69,9 @@ if [ -d $MOUNTED_SSH_DIR ]; then
     chmod 600 $USER_HOME_SSH_DIR/*
     chmod 644 $USER_HOME_SSH_DIR/*.pub
 fi
+
+# ssh keyscan supported domains
+host_keyscan
 
 TRUSTED_CERTS_DIR=$CRAFTER_HOME/trusted-certs
 
