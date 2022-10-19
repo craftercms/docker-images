@@ -19,6 +19,9 @@ ENV CRON_SCHEDULE='0 0 * * *' \
     LOGROTATE_COPIES='10' \
     LOGROTATE_SIZE='10M'
 
+# Update & Upgrade existing packages
+RUN apk update && apk upgrade
+
 # Install dependencies
 RUN apk add --no-cache bash shadow logrotate tini gettext libintl vim nano
 
