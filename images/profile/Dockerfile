@@ -18,6 +18,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -eux; \
     apt-get update; \
+    apt-get upgrade -y; \
     apt-get install -y gosu; \
     apt-get install -y --no-install-recommends vim; \
     apt-get install -y --no-install-recommends nano; \
