@@ -11,7 +11,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM alpine:3.10 as main
+FROM alpine:3.16 as main
+
+# Update & Upgrade existing packages
+RUN apk update && apk upgrade
 
 # Install dependencies
 RUN apk add --no-cache bash shadow openssh git su-exec vim nano

@@ -11,7 +11,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM httpd:2.4-alpine
+FROM httpd:2.4-alpine3.16
+
+# Update & Upgrade existing packages
+RUN apk update && apk upgrade
 
 # Install dependencies
 RUN apk add --no-cache bash shadow git git-daemon su-exec vim nano
