@@ -36,7 +36,7 @@ host_keyscan() {
 
     for domain in "${LIST[@]}"; do
         host_keys=$(ssh-keygen -F "$domain" -f "$known_hosts_file")
-        if [ -z "$host_keys"]; then
+        if [ -z "$host_keys" ]; then
             echo "Adding host keys for domain $domain to $known_hosts_file"
             ssh-keyscan "$domain" >> "$known_hosts_file"
         else
