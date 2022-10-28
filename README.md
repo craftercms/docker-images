@@ -46,7 +46,7 @@ Builds the Crafter CMS Docker images, including:
 - **authoringBundle:** Can be the URL to download the authoring bundle, or the local tar.gz of the bundle, or the directory with the expanded bundle.
 - **deliveryBundle:** Can be the URL to download the delivery bundle, or the local tar.gz of the bundle, or the directory with the expanded bundle.
 - **authoringCustomWebapps:** Paths of custom WARs to be placed in the Authoring Tomcat image, separated by commas. Existing WARs, like `studio.war`, can be overwritten this way with custom overlays.
-- **authoringCustomWebapps:** Paths of custom WARs to be placed in the Delivery Tomcat image, separated by commas. Existing WARs, like `ROOT.war`, can be overwritten this way with custom overlays.
+- **deliveryCustomWebapps:** Paths of custom WARs to be placed in the Delivery Tomcat image, separated by commas. Existing WARs, like `ROOT.war`, can be overwritten this way with custom overlays.
 
 # Example commands
 

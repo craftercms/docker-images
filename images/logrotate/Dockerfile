@@ -11,13 +11,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM alpine:3.10 as main
+FROM alpine:3.16 as main
 
 # Add default variables. Default cron runs the logrotate daily at 12 AM
 ENV CRON_SCHEDULE='0 0 * * *' \
     LOGROTATE_PATTERN='/opt/crafter/logs/deployer/* /opt/crafter/logs/tomcat/*' \
     LOGROTATE_COPIES='10' \
     LOGROTATE_SIZE='10M'
+
+# Update & Upgrade existing packages
+RUN apk update && apk upgrade
 
 # Install dependencies
 RUN apk add --no-cache bash shadow logrotate tini gettext libintl vim nano
