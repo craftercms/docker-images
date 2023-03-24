@@ -102,10 +102,6 @@ EXPOSE 4444
 # Expose Hazelcast port
 EXPOSE 5701
 
-# Libraries needed by Galera (can be removed if a future version of Galera works with 1.1)
-COPY --chown=crafter:crafter lib/libcrypto.so.1.0.0 /lib/x86_64-linux-gnu/libcrypto.so.1.0.0
-COPY --chown=crafter:crafter lib/libssl.so.1.0.0 /lib/x86_64-linux-gnu/libssl.so.1.0.0
-
 FROM enterprise as imagemagick
 
 RUN set -eux; \

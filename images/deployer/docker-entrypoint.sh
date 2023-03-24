@@ -32,9 +32,16 @@ host_keyscan() {
     DOMAINS=${SSH_KEYSCAN_DOMAINS:-"bitbucket.com,gitlab.com,github.com"}
     IFS=',' read -ra LIST <<< "$DOMAINS"
 
+    known_hosts_file="${CRAFTER_SSH_CONFIG}/known_hosts"
+
     for domain in "${LIST[@]}"; do
-        echo "ssh-keyscan for domain: $domain"
-        ssh-keyscan "$domain" >> "${CRAFTER_SSH_CONFIG}/known_hosts"
+        host_keys=$(ssh-keygen -F "$domain" -f "$known_hosts_file")
+        if [ -z "$host_keys" ]; then
+            echo "Adding host keys for domain $domain to $known_hosts_file"
+            ssh-keyscan "$domain" >> "$known_hosts_file"
+        else
+            echo "Host keys for $domain already present in $known_hosts_file"
+        fi
     done
 }
 
