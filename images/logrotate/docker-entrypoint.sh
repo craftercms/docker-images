@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Generate logrotate config file
-cat logrotate.tpl.conf | envsubst > /etc/logrotate.conf
-
+# Check for conf file and generate if logrotate config file is not present
+CONF_FILE=/etc/logrotate.conf
+if [ -f "$CONF_FILE" ]; then
+else
+	cat logrotate.tpl.conf | envsubst > /etc/logrotate.conf
 # Setup crafter user crontab
 echo "$CRON_SCHEDULE /usr/sbin/logrotate /etc/logrotate.conf" | crontab -
 
