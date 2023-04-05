@@ -18,6 +18,7 @@
 CONF_FILE=/etc/logrotate.conf
 if [ ! -f "$CONF_FILE" ]; then
 	cat logrotate.tpl.conf | envsubst > /etc/logrotate.conf
+fi
 # Setup crafter user crontab
 echo "$CRON_SCHEDULE /usr/sbin/logrotate /etc/logrotate.conf" | crontab -
 
