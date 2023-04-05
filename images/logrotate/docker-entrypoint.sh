@@ -16,8 +16,7 @@
 
 # Check for conf file and generate if logrotate config file is not present
 CONF_FILE=/etc/logrotate.conf
-if [ -f "$CONF_FILE" ]; then
-else
+if [ ! -f "$CONF_FILE" ]; then
 	cat logrotate.tpl.conf | envsubst > /etc/logrotate.conf
 # Setup crafter user crontab
 echo "$CRON_SCHEDULE /usr/sbin/logrotate /etc/logrotate.conf" | crontab -
