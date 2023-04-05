@@ -18,7 +18,7 @@ ENV CRON_SCHEDULE='0 0 * * *' \
     LOGROTATE_PATTERN='/opt/crafter/logs/deployer/* /opt/crafter/logs/tomcat/*' \
     LOGROTATE_COPIES='10' \
     LOGROTATE_SIZE='10M'
-
+    DATE_FORMAT='-%Y%m%d_%H%M%S'
 # Update & Upgrade existing packages
 RUN apk update && apk upgrade
 
