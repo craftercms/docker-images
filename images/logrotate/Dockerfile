@@ -14,10 +14,10 @@
 FROM alpine:3.16 as main
 
 # Add default variables. Default cron runs the logrotate daily at 12 AM
-ENV CRON_SCHEDULE='0 0 * * *' \
-    LOGROTATE_PATTERN='/opt/crafter/logs/deployer/* /opt/crafter/logs/tomcat/*' \
+ENV CRON_SCHEDULE='0 * * * *' \
+    LOGROTATE_PATTERN='/opt/crafter/logs/*.log /opt/crafter/logs/*.txt /opt/crafter/logs/*.csv' \
     LOGROTATE_COPIES='10' \
-    LOGROTATE_SIZE='100M'
+    LOGROTATE_SIZE='100M' \
     LOGROTATE_DATE_FORMAT='-%Y%m%d_%H%M%S'
 # Update & Upgrade existing packages
 RUN apk update && apk upgrade
