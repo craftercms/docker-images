@@ -17,7 +17,7 @@ FROM alpine:3.16 as main
 ENV CRON_SCHEDULE='0 0 * * *' \
     LOGROTATE_PATTERN='/opt/crafter/logs/deployer/* /opt/crafter/logs/tomcat/*' \
     LOGROTATE_COPIES='10' \
-    LOGROTATE_SIZE='10M'
+    LOGROTATE_SIZE='100M'
     LOGROTATE_DATE_FORMAT='-%Y%m%d_%H%M%S'
 # Update & Upgrade existing packages
 RUN apk update && apk upgrade
