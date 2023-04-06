@@ -13,7 +13,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 FROM alpine:3.16 as main
 
-# Add default variables. Default cron runs the logrotate daily at 12 AM
+# Add default variables. Default cron runs the logrotate every hour.
 ENV CRON_SCHEDULE='0 * * * *' \
     LOGROTATE_PATTERN='/opt/crafter/logs/*.log /opt/crafter/logs/*.txt /opt/crafter/logs/*.csv' \
     LOGROTATE_COPIES='10' \
