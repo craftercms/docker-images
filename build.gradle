@@ -493,6 +493,7 @@ task buildStudioArbiter(group: "Build", description: "Builds the Studio Arbiter 
 }
 
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
+    dependsOn buildLogrotate
     dependsOn buildAuthoringTomcat
     dependsOn buildDeliveryTomcat
     dependsOn buildDeployer
@@ -515,7 +516,6 @@ task build(group: "Build", description: "Builds all Docker images") {
     dependsOn buildMainImages
     dependsOn buildTomcatImagesWithSolrSupport
     dependsOn buildProfile
-    dependsOn buildLogrotate
 }
 
 task clean(group: "Build", description: "Deletes build folder") {
