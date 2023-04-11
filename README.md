@@ -1,6 +1,6 @@
-# Crafter CMS Docker Images
+# CrafterCMS Docker Images
 
-Builds the Crafter CMS Docker images, including:
+Builds the CrafterCMS Docker images, including:
 
 1. Authoring Tomcat
 2. Authoring Tomcat with Image Magick
