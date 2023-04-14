@@ -259,7 +259,7 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
     }
 }
 
-task buildAuthoringTomcatLocal(group: "Build", description: "Builds the Authoring Tomcat Docker Local image") {
+task buildAuthoringLocal(group: "Build", description: "Builds the Authoring Tomcat Docker Local image") {
     dependsOn prepareAuthoringBundle
     dependsOn copyAuthoringCustomWebapps
 
@@ -281,7 +281,7 @@ task buildAuthoringTomcatLocal(group: "Build", description: "Builds the Authorin
         }
 
         exec {
-            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringTomcatLocalImageName}:${project.version}", buildDir
+            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringLocalImageName}:${project.version}", buildDir
         }
     }
 }
@@ -443,7 +443,7 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildLogrotate
     dependsOn buildAuthoringTomcat
-    dependsOn buildAuthoringTomcatLocal
+    dependsOn buildAuthoringLocal
     dependsOn buildDeliveryTomcat
     dependsOn buildDeployer
     dependsOn buildGitSshServer
