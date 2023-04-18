@@ -11,13 +11,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM tomcat:8-jdk8-openjdk-slim as main
+FROM tomcat:9-jdk11-openjdk-slim as main
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -eux; \
     apt-get update; \
+    apt-get upgrade -y; \
     apt-get install -y gosu; \
     apt-get install -y --no-install-recommends curl; \
     apt-get install -y --no-install-recommends lsof; \

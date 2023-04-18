@@ -11,13 +11,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM openjdk:8-jdk-slim as main
+FROM openjdk:11-jdk-slim as main
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -eux; \
     apt-get update; \
+    apt-get upgrade -y; \
     apt-get install -y gosu; \
     apt-get install -y --no-install-recommends curl; \
     apt-get install -y --no-install-recommends openssh-client; \

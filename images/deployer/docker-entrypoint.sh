@@ -23,6 +23,28 @@ chown_dir() {
   fi
 }
 
+host_keyscan() {
+    if [ ! -d $CRAFTER_SSH_CONFIG ]; then
+        mkdir -p $CRAFTER_SSH_CONFIG
+        chown_dir "$CRAFTER_SSH_CONFIG"
+    fi
+
+    DOMAINS=${SSH_KEYSCAN_DOMAINS:-"bitbucket.com,gitlab.com,github.com"}
+    IFS=',' read -ra LIST <<< "$DOMAINS"
+
+    known_hosts_file="${CRAFTER_SSH_CONFIG}/known_hosts"
+
+    for domain in "${LIST[@]}"; do
+        host_keys=$(ssh-keygen -F "$domain" -f "$known_hosts_file")
+        if [ -z "$host_keys" ]; then
+            echo "Adding host keys for domain $domain to $known_hosts_file"
+            ssh-keyscan "$domain" >> "$known_hosts_file"
+        else
+            echo "Host keys for $domain already present in $known_hosts_file"
+        fi
+    done
+}
+
 export CRAFTER_HOME=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 
@@ -55,6 +77,9 @@ if [ -d $MOUNTED_SSH_DIR ]; then
     chmod 644 $USER_HOME_SSH_DIR/*.pub
 fi
 
+# ssh keyscan supported domains
+host_keyscan
+
 TRUSTED_CERTS_DIR=$CRAFTER_HOME/trusted-certs
 
 # Import trusted certs
@@ -64,7 +89,7 @@ if [ -d $TRUSTED_CERTS_DIR ]; then
         cert_filename_no_ext="${cert_filename%.*}"
 
         echo "Importing trusted certificate $cert_file"
-        keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -alias "$cert_filename_no_ext" -file "$cert_file"
+        keytool -importcert -cacerts -keypass changeit -storepass changeit -noprompt -alias "$cert_filename_no_ext" -file "$cert_file"
     done
 fi
 

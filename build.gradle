@@ -29,7 +29,13 @@ plugins {
     id "de.undercouch.download" version "4.0.4"
 }
 
-project.version = project.hasProperty("tag") ? project.property("tag") : "3.1.30-SNAPSHOT" // craftercms version flag
+if (project.hasProperty("tag")) {
+    project.version = project.property("tag")
+} else if (project.hasProperty("enterprise")) {
+    project.version = "4.1.0E-BETA" // craftercms enterprise version flag
+} else {
+    project.version = "4.1.0-SNAPSHOT" // craftercms version flag
+}
 
 ext {
     imagesDir = "${projectDir}/images"
@@ -37,6 +43,14 @@ ext {
     tempDir = "${buildDir}/temp"
 
     libsslUrl = "https://downloads.craftercms.org/ent/lib/libssl1.0.0.tar.gz"
+
+    downloadsRootFolder = "${project.version}"
+    authoringBuildTarget = 'main'
+    
+    if (project.hasProperty("enterprise")) {
+        downloadsRootFolder = "ent/${project.version}"
+        authoringBuildTarget = 'enterprise'
+    }
 
     if (project.hasProperty("authoringBundle")) {
         if (project.property("authoringBundle") ==~ /^https?:\/\/.+$/) {
@@ -49,7 +63,7 @@ ext {
             authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleFile) + "/crafter"
         }
     } else {
-        authoringBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-authoring-${project.version}.tar.gz"
+        authoringBundleUrl = "https://downloads.craftercms.org/${downloadsRootFolder}/social/crafter-cms-authoring-${project.version}-linux-x86_64.tar.gz"
         authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleUrl)
         authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
     }
@@ -65,15 +79,9 @@ ext {
             deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile) + "/crafter"
         }
     } else {
-        deliveryBundleUrl = "https://downloads.craftercms.org/${project.version}/social/crafter-cms-delivery-${project.version}.tar.gz"
+        deliveryBundleUrl = "https://downloads.craftercms.org/${downloadsRootFolder}/social/crafter-cms-delivery-${project.version}-linux-x86_64.tar.gz"
         deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
         deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
-    }
-
-    authoringBuildTarget = 'main'
-    
-    if (project.hasProperty("enterprise")) {
-        authoringBuildTarget = 'enterprise'
     }
 
     defaultTomcatBinExcludes = [
@@ -81,28 +89,13 @@ ext {
         "upgrade",
         "crafter-deployer",
         "elasticsearch",
-        "solr",
         "dbms",
+        "cli",
+        "mongodb",
+        "crafter-cli",
         "apache-tomcat/work/**",
         "apache-tomcat/temp/**",
         "apache-tomcat/webapps/crafter-search*",
-        "apache-tomcat/webapps/crafter-social*",
-        "apache-tomcat/webapps/crafter-profile*",
-        "apache-tomcat/webapps/ROOT",
-        "apache-tomcat/webapps/studio",
-        "**/*.pid"   
-    ]
-
-    tomcatWithCrafterSearchBinExcludes = [
-        "migration",
-        "upgrade",
-        "crafter-deployer",
-        "elasticsearch",
-        "solr",
-        "dbms",
-        "apache-tomcat/work/**",
-        "apache-tomcat/temp/**",
-        "apache-tomcat/webapps/crafter-search",
         "apache-tomcat/webapps/crafter-social*",
         "apache-tomcat/webapps/crafter-profile*",
         "apache-tomcat/webapps/ROOT",
@@ -263,40 +256,6 @@ task buildAuthoringTomcatWithImageMagick(group: "Build", description: "Builds th
     }
 }
 
-task buildAuthoringTomcatWithSolrSupport(group: "Build", description: "Builds the Authoring Tomcat With Solr Support Docker image") {
-    dependsOn prepareAuthoringBundle
-    dependsOn copyAuthoringCustomWebapps
-
-    def buildDir = "${imagesBuildDir}/authoring/tomcat_with_solr_support"
-
-    doFirst {
-        delete buildDir
-    }
-    doLast {
-        copy {
-            from "${imagesDir}/authoring/tomcat/"
-            into buildDir
-        }
-
-        if (project.hasProperty("enterprise")) {
-            copy {
-                from "${tempDir}/libssl1.0.0/"
-                into "${buildDir}/lib"
-            }
-        }        
-
-        copy {
-            from "${authoringBundleRoot}/bin/"
-            into "${buildDir}/bin"
-            exclude tomcatWithCrafterSearchBinExcludes
-        }
-
-        exec {
-            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringTomcatWithSolrSupportImageName}:${project.version}", buildDir
-        }
-    }
-}
-
 task buildDeliveryTomcat(group: "Build", description: "Builds the Delivery Tomcat Docker image") {
     dependsOn prepareDeliveryBundle
     dependsOn copyDeliveryCustomWebapps
@@ -319,34 +278,7 @@ task buildDeliveryTomcat(group: "Build", description: "Builds the Delivery Tomca
         }
 
         exec {
-            commandLine 'docker', 'build', '-t', "${project.deliveryTomcatDockerImageName}:${project.version}", buildDir
-        }
-    }
-}
-
-task buildDeliveryTomcatWithSolrSupport(group: "Build", description: "Builds the Delivery Tomcat With Solr Support Docker image") {
-    dependsOn prepareDeliveryBundle
-    dependsOn copyDeliveryCustomWebapps
-
-    def buildDir = "${imagesBuildDir}/delivery/tomcat_with_solr_support"
-
-    doFirst {
-        delete buildDir
-    }
-    doLast {
-        copy {
-            from "${imagesDir}/delivery/tomcat/"
-            into buildDir
-        }
-
-        copy {
-            from "${deliveryBundleRoot}/bin/"
-            into "${buildDir}/bin"
-            exclude tomcatWithCrafterSearchBinExcludes
-        }
-
-        exec {
-            commandLine 'docker', 'build', '-t', "${project.deliveryTomcatWithSolrSupportImageName}:${project.version}", buildDir
+            commandLine 'docker', 'build', '-t', "${project.deliveryTomcatImageName}:${project.version}", buildDir
         }
     }
 }
@@ -369,9 +301,11 @@ task buildDeployer(group: "Build", description: "Builds the Deployer Docker imag
             into "${buildDir}/bin"     
             exclude "migration"
             exclude "upgrade"
+            exclude "cli"
+            exclude "mongodb"
+            exclude "crafter-cli"
             exclude "apache-tomcat"
             exclude "elasticsearch"
-            exclude "solr"
             exclude "**/*.pid"
         }
 
@@ -391,6 +325,8 @@ task buildProfile(group: "Build", description: "Builds the Profile Docker image"
     }
     doLast {
         copy {
+            duplicatesStrategy = 'include'
+
             from "${imagesBuildDir}/delivery/tomcat/"
             from "${imagesDir}/profile/"
             into buildDir
@@ -462,36 +398,6 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
     }    
 }
 
-task buildStudioArbiter(group: "Build", description: "Builds the Studio Arbiter Docker image") {
-    dependsOn prepareAuthoringBundle
-    
-    def buildDir = "${imagesBuildDir}/arbiter"
-    
-    doFirst {
-        delete buildDir
-    }
-    doLast {
-        copy {
-            from "${tempDir}/libssl1.0.0/"
-            into "${buildDir}/lib"
-        }
-        
-        copy {
-            from "${authoringBundleRoot}/bin/studio-arbiter/studio-arbiter.jar"
-            into "${buildDir}/bin"
-        }
-        
-        copy {
-            from "${imagesDir}/arbiter"
-            into buildDir
-        }
-        
-        exec {
-            commandLine 'docker', 'build', '-t', "${project.studioArbiterImageName}:${project.version}", buildDir
-        }
-    }
-}
-
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildAuthoringTomcat
     dependsOn buildDeliveryTomcat
@@ -499,21 +405,14 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
     dependsOn buildGitSshServer
     dependsOn buildGitHttpsServer
     if (project.hasProperty("enterprise")) {
-        dependsOn buildStudioArbiter
         if (project.hasProperty("imagemagick")) {
             dependsOn buildAuthoringTomcatWithImageMagick
         }
     }
 }
 
-task buildTomcatImagesWithSolrSupport(group: "Build", description: "Builds Tomcat Docker images with Solr support") {
-    dependsOn buildAuthoringTomcatWithSolrSupport
-    dependsOn buildDeliveryTomcatWithSolrSupport
-}
-
 task build(group: "Build", description: "Builds all Docker images") {
     dependsOn buildMainImages
-    dependsOn buildTomcatImagesWithSolrSupport
     dependsOn buildProfile
     dependsOn buildLogrotate
 }

@@ -11,13 +11,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM tomcat:8-jdk8-openjdk-slim as main
+FROM tomcat:9-jdk11-openjdk-slim as main
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -eux; \
     apt-get update; \
+    apt-get upgrade -y; \
     apt-get install -y gosu; \
     apt-get install -y --no-install-recommends curl; \
     apt-get install -y --no-install-recommends lsof; \
@@ -45,10 +46,12 @@ WORKDIR /opt/crafter
 # Create volumes
 VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
 
-# Add the Crafter user
+# Add the Crafter user and the default Git user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
     chown -R crafter:crafter .; \
-    chown -R crafter:crafter /usr/local/tomcat
+    chown -R crafter:crafter /usr/local/tomcat; \
+    gosu crafter git config --global user.email "evalgit@example.com"; \
+    gosu crafter git config --global user.name "git_repo_user"
 
 # Copy bin folder
 COPY --chown=crafter:crafter ./bin ./bin/
@@ -98,10 +101,6 @@ EXPOSE 4568
 EXPOSE 4444
 # Expose Hazelcast port
 EXPOSE 5701
-
-# Libraries needed by Galera (can be removed if a future version of Galera works with 1.1)
-COPY --chown=crafter:crafter lib/libcrypto.so.1.0.0 /lib/x86_64-linux-gnu/libcrypto.so.1.0.0
-COPY --chown=crafter:crafter lib/libssl.so.1.0.0 /lib/x86_64-linux-gnu/libssl.so.1.0.0
 
 FROM enterprise as imagemagick
 
