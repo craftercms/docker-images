@@ -60,10 +60,7 @@ if [ -d $CRAFTER_BACKUPS_DIR ]; then
     chown_dir "$CRAFTER_BACKUPS_DIR"
 fi
 
-<<<<<<< HEAD
-=======
 chown_dir "$CRAFTER_BIN_DIR/grapes"
->>>>>>> origin/develop
 chown_dir "$CRAFTER_LOGS_DIR"
 chown_dir "$CRAFTER_DATA_DIR"
 chown_dir "$CRAFTER_TEMP_DIR"
