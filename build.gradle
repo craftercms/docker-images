@@ -42,9 +42,6 @@ ext {
     imagesBuildDir = "${buildDir}/images"
     tempDir = "${buildDir}/temp"
 
-    // TODO remove the following
-    libsslUrl = "https://downloads.craftercms.org/ent/lib/libssl1.0.0.tar.gz"
-
     downloadsRootFolder = "${project.version}"
     authoringBuildTarget = 'main'
     
@@ -119,12 +116,6 @@ ext {
     ]
 }
 
-task downloadLibssl(type: Download) {
-    src libsslUrl
-    overwrite false
-    dest "${tempDir}/libssl1.0.0.tar.gz" 
-}
-
 task downloadAuthoringBundle(type: Download) {
     src authoringBundleUrl
     overwrite false
@@ -135,12 +126,6 @@ task downloadDeliveryBundle(type: Download) {
     src deliveryBundleUrl
     overwrite false
     dest deliveryBundleFile
-}
-
-task expandLibssl(type: Copy) {
-    mustRunAfter downloadLibssl
-    from tarTree("${tempDir}/libssl1.0.0.tar.gz")
-    into "${tempDir}/libssl1.0.0"
 }
 
 task expandAuthoringBundle(type: Copy) {
@@ -155,11 +140,7 @@ task expandDeliveryBundle(type: Copy) {
     into "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile)
 }
 
-task prepareAuthoringBundle() { 
-    if (project.hasProperty("enterprise")) {
-        dependsOn downloadLibssl
-        dependsOn expandLibssl 
-    }
+task prepareAuthoringBundle() {
     if (!file(authoringBundleRoot).exists()) {
         if (authoringBundleUrl) {
             dependsOn downloadAuthoringBundle
@@ -238,13 +219,6 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
         copy {
             from "${imagesDir}/authoring/tomcat/"
             into buildDir
-        }
-
-        if (project.hasProperty("enterprise")) {
-            copy {
-                from "${tempDir}/libssl1.0.0/"
-                into "${buildDir}/lib"
-            }
         }
 
         copy {
