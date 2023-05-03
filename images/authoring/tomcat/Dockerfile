@@ -96,9 +96,6 @@ FROM main as enterprise
 
 # Expose MariaDB cluster ports
 EXPOSE 3306
-EXPOSE 4567
-EXPOSE 4568
-EXPOSE 4444
 # Expose Hazelcast port
 EXPOSE 5701
 
