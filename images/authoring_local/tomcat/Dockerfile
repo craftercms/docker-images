@@ -11,7 +11,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM tomcat:9-jdk11-openjdk-slim as main
+FROM tomcat:9-jdk17-openjdk-slim as main
 
 # Install dependencies
 ARG DEBIAN_FRONTEND=noninteractive
@@ -96,6 +96,9 @@ FROM main as enterprise
 
 # Expose MariaDB cluster ports
 EXPOSE 3306
+EXPOSE 4567
+EXPOSE 4568
+EXPOSE 4444
 # Expose Hazelcast port
 EXPOSE 5701
 

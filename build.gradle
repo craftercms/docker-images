@@ -32,17 +32,15 @@ plugins {
 if (project.hasProperty("tag")) {
     project.version = project.property("tag")
 } else if (project.hasProperty("enterprise")) {
-    project.version = "4.0.3E" // craftercms enterprise version flag
+    project.version = "4.0.4E" // craftercms enterprise version flag
 } else {
-    project.version = "4.0.3" // craftercms version flag
+    project.version = "4.0.4" // craftercms version flag
 }
 
 ext {
     imagesDir = "${projectDir}/images"
     imagesBuildDir = "${buildDir}/images"
     tempDir = "${buildDir}/temp"
-
-    libsslUrl = "https://downloads.craftercms.org/ent/lib/libssl1.0.0.tar.gz"
 
     downloadsRootFolder = "${project.version}"
     authoringBuildTarget = 'main'
@@ -102,12 +100,20 @@ ext {
         "apache-tomcat/webapps/studio",
         "**/*.pid"   
     ]
-}
 
-task downloadLibssl(type: Download) {
-    src libsslUrl
-    overwrite false
-    dest "${tempDir}/libssl1.0.0.tar.gz" 
+    defaultTomcatLocalBinExcludes = [
+            "migration",
+            "upgrade",
+            "mongodb",
+            "apache-tomcat/work/**",
+            "apache-tomcat/temp/**",
+            "apache-tomcat/webapps/crafter-search*",
+            "apache-tomcat/webapps/crafter-social*",
+            "apache-tomcat/webapps/crafter-profile*",
+            "apache-tomcat/webapps/ROOT",
+            "apache-tomcat/webapps/studio",
+            "**/*.pid"
+    ]
 }
 
 task downloadAuthoringBundle(type: Download) {
@@ -122,12 +128,6 @@ task downloadDeliveryBundle(type: Download) {
     dest deliveryBundleFile
 }
 
-task expandLibssl(type: Copy) {
-    mustRunAfter downloadLibssl
-    from tarTree("${tempDir}/libssl1.0.0.tar.gz")
-    into "${tempDir}/libssl1.0.0"
-}
-
 task expandAuthoringBundle(type: Copy) {
     mustRunAfter downloadAuthoringBundle
     from tarTree(authoringBundleFile)
@@ -140,11 +140,7 @@ task expandDeliveryBundle(type: Copy) {
     into "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile)
 }
 
-task prepareAuthoringBundle() { 
-    if (project.hasProperty("enterprise")) {
-        dependsOn downloadLibssl
-        dependsOn expandLibssl 
-    }
+task prepareAuthoringBundle() {
     if (!file(authoringBundleRoot).exists()) {
         if (authoringBundleUrl) {
             dependsOn downloadAuthoringBundle
@@ -225,13 +221,6 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
             into buildDir
         }
 
-        if (project.hasProperty("enterprise")) {
-            copy {
-                from "${tempDir}/libssl1.0.0/"
-                into "${buildDir}/lib"
-            }
-        }
-
         copy {
             from "${authoringBundleRoot}/bin/"
             into "${buildDir}/bin"
@@ -240,6 +229,33 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
 
         exec {
             commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringTomcatImageName}:${project.version}", buildDir
+        }
+    }
+}
+
+task buildAuthoringLocal(group: "Build", description: "Builds the Authoring Tomcat Docker Local image") {
+    dependsOn prepareAuthoringBundle
+    dependsOn copyAuthoringCustomWebapps
+
+    def buildDir = "${imagesBuildDir}/authoring_local/tomcat"
+
+    doFirst {
+        delete buildDir
+    }
+    doLast {
+        copy {
+            from "${imagesDir}/authoring_local/tomcat/"
+            into buildDir
+        }
+
+        copy {
+            from "${authoringBundleRoot}/bin/"
+            into "${buildDir}/bin"
+            exclude defaultTomcatLocalBinExcludes
+        }
+
+        exec {
+            commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringLocalImageName}:${project.version}", buildDir
         }
     }
 }
@@ -399,7 +415,9 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
 }
 
 task buildMainImages(group: "Build", description: "Builds main Docker images") {
+    dependsOn buildLogrotate
     dependsOn buildAuthoringTomcat
+    dependsOn buildAuthoringLocal
     dependsOn buildDeliveryTomcat
     dependsOn buildDeployer
     dependsOn buildGitSshServer
@@ -414,7 +432,6 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
 task build(group: "Build", description: "Builds all Docker images") {
     dependsOn buildMainImages
     dependsOn buildProfile
-    dependsOn buildLogrotate
 }
 
 task clean(group: "Build", description: "Deletes build folder") {
