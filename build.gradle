@@ -86,7 +86,7 @@ ext {
         "migration",
         "upgrade",
         "crafter-deployer",
-        "elasticsearch",
+        "opensearch",
         "dbms",
         "cli",
         "mongodb",
@@ -102,17 +102,17 @@ ext {
     ]
 
     defaultTomcatLocalBinExcludes = [
-            "migration",
-            "upgrade",
-            "mongodb",
-            "apache-tomcat/work/**",
-            "apache-tomcat/temp/**",
-            "apache-tomcat/webapps/crafter-search*",
-            "apache-tomcat/webapps/crafter-social*",
-            "apache-tomcat/webapps/crafter-profile*",
-            "apache-tomcat/webapps/ROOT",
-            "apache-tomcat/webapps/studio",
-            "**/*.pid"
+        "migration",
+        "upgrade",
+        "mongodb",
+        "apache-tomcat/work/**",
+        "apache-tomcat/temp/**",
+        "apache-tomcat/webapps/crafter-search*",
+        "apache-tomcat/webapps/crafter-social*",
+        "apache-tomcat/webapps/crafter-profile*",
+        "apache-tomcat/webapps/ROOT",
+        "apache-tomcat/webapps/studio",
+        "**/*.pid"
     ]
 }
 
@@ -321,7 +321,7 @@ task buildDeployer(group: "Build", description: "Builds the Deployer Docker imag
             exclude "mongodb"
             exclude "crafter-cli"
             exclude "apache-tomcat"
-            exclude "elasticsearch"
+            exclude "opensearch"
             exclude "**/*.pid"
         }
 
