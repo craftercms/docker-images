@@ -77,11 +77,21 @@ RUN set -eux; \
     # hard link to / for ease of COPY --from
     ln -v /usr/local/bin/gosu /
 
-# Install MariaDB for libraries depdendencies
-ENV MARIADB_VERSION 10.4.22
-RUN echo 'http://dl-cdn.alpinelinux.org/alpine/v3.11/main' >> /etc/apk/repositories; \
-    apk update; \
-    apk add mariadb=$MARIADB_VERSION-r0 mariadb-common=$MARIADB_VERSION-r0 mariadb-client=$MARIADB_VERSION-r0 mariadb-server-utils=$MARIADB_VERSION-r0;
+# Install MariaDB depdendencies
+RUN apk add --update --no-cache -t .mariadb-run-deps \
+        libaio \
+        libstdc++ \
+        libxml2 \
+        linux-pam \
+        make \
+        pcre \
+        libssl1.1 \
+        libcrypto1.1 \
+        pwgen \
+        sudo \
+        tzdata \
+        xz-libs \
+        zlib;
 
 # Create folders and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
