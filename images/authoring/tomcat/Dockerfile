@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -11,27 +11,87 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM tomcat:9-jdk11-openjdk-slim as main
+FROM eclipse-temurin:17-jdk-alpine AS main
+
+############# INSTALL NATIVE TOMCAT #############
+ENV CATALINA_HOME=/usr/local/tomcat \
+    TOMCAT_MAJOR="9" \
+    TOMCAT_VERSION="9.0.78"
+
+# Download Tomcat, and then Build tc-native
+RUN apk add --no-cache --virtual .my-build-deps apr-dev openssl-dev make g++ && \
+    cd /tmp && \
+    wget -O apache-tomcat.tar.gz http://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MAJOR}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
+    tar -C /opt -xf apache-tomcat.tar.gz && \
+    ln -s /opt/apache-tomcat-$TOMCAT_VERSION $CATALINA_HOME && \
+    cd $CATALINA_HOME/bin && \
+    tar -xf tomcat-native.tar.gz && \
+    rm -f tomcat-native.tar.gz && \
+    cd tomcat-native-*-src/native && \
+    ./configure --with-java-home=$JAVA_HOME --prefix=$CATALINA_HOME && \
+    make && \
+    make install && \
+    make clean && \
+    rm -rf /tmp/* && \
+    # Remove added packages
+    apk del --purge .my-build-deps && \
+    rm -rf /var/cache/apk/* && \
+    # fix permissions (especially for running as non-root)
+    # https://github.com/docker-library/tomcat/issues/35
+    chmod -R +rx $CATALINA_HOME/ && \
+    chmod 1777 $CATALINA_HOME/logs $CATALINA_HOME/temp $CATALINA_HOME/work
+
+#################################################
 
 # Install dependencies
-ARG DEBIAN_FRONTEND=noninteractive
-
 RUN set -eux; \
-    apt-get update; \
-    apt-get upgrade -y; \
-    apt-get install -y gosu; \
-    apt-get install -y --no-install-recommends curl; \
-    apt-get install -y --no-install-recommends lsof; \
-    apt-get install -y --no-install-recommends libaio1; \
-    apt-get install -y --no-install-recommends libncurses5; \
-    apt-get install -y --no-install-recommends openssh-client; \
-    apt-get install -y --no-install-recommends git; \
-    apt-get install -y --no-install-recommends rsync; \
-    apt-get install -y --no-install-recommends iproute2; \
-    apt-get install -y --no-install-recommends procps; \
-    apt-get install -y --no-install-recommends vim; \
-    apt-get install -y --no-install-recommends nano; \
-    rm -rf /var/lib/apt/lists/*;
+    apk update; \
+    apk upgrade; \
+    apk add --no-cache bash; \
+    apk add --no-cache curl; \
+    apk add --no-cache lsof; \
+    apk add --no-cache openssh-client; \
+    apk add --no-cache git; \
+    apk add --no-cache rsync; \
+    apk add --no-cache iproute2; \
+    apk add --no-cache procps; \
+    apk add --no-cache vim; \
+    apk add --no-cache nano;
+
+# Install gosu
+ENV GOSU_VERSION 1.16
+RUN set -eux; \
+    apk add --no-cache --virtual .fetch-deps dpkg gnupg; \
+    dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
+    wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+    wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
+    GNUPGHOME="$(mktemp -d)"; export GNUPGHOME; \
+    gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+    gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
+    gpgconf --kill all; \
+    rm -rf "$GNUPGHOME"; unset GNUPGHOME; \
+    apk del --no-network .fetch-deps; \
+    chmod +x /usr/local/bin/gosu; \
+    gosu --version; \
+    gosu nobody true; \
+    # hard link to / for ease of COPY --from
+    ln -v /usr/local/bin/gosu /
+
+# Install MariaDB depdendencies
+RUN apk add --update --no-cache -t .mariadb-run-deps \
+        libaio \
+        libstdc++ \
+        libxml2 \
+        linux-pam \
+        make \
+        pcre \
+        libssl1.1 \
+        libcrypto1.1 \
+        pwgen \
+        sudo \
+        tzdata \
+        xz-libs \
+        zlib;
 
 # Create folders and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
@@ -47,9 +107,9 @@ WORKDIR /opt/crafter
 VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
 
 # Add the Crafter user and the default Git user
-RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
+RUN addgroup -S crafter && adduser -S -u 1000 -G crafter crafter; \
     chown -R crafter:crafter .; \
-    chown -R crafter:crafter /usr/local/tomcat; \
+    chown -R crafter:crafter /usr/local/tomcat/; \
     gosu crafter git config --global user.email "evalgit@example.com"; \
     gosu crafter git config --global user.name "git_repo_user"
 
@@ -82,7 +142,7 @@ RUN sed -i '/export CATALINA_HOME=$CRAFTER_BIN_DIR\/apache-tomcat/d' ./bin/craft
     sed -i 's/33306/3306/g' ./bin/crafter-setenv.sh;
 
 # Copy entrypoint script and make it executable
-COPY ./docker-entrypoint.sh .
+COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
 # Expose debug port
@@ -92,16 +152,15 @@ EXPOSE 8000
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
 CMD [ "run" ]
 
-FROM main as enterprise
+FROM main AS enterprise
 
 # Expose MariaDB cluster ports
 EXPOSE 3306
 # Expose Hazelcast port
 EXPOSE 5701
 
-FROM enterprise as imagemagick
+FROM enterprise AS imagemagick
 
 RUN set -eux; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends imagemagick; \
-    rm -rf /var/lib/apt/lists/*;
+    apk update; \
+    apk add --no-cache imagemagick;
