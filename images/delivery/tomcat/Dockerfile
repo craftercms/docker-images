@@ -88,7 +88,7 @@ WORKDIR /opt/crafter
 VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
 
 # Add the Crafter user
-RUN addgroup -S crafter && adduser -S -u 1000 -G crafter crafter; \
+RUN addgroup -S -g 1000 crafter && adduser -S -u 1000 -G crafter crafter; \
     chown -R crafter:crafter .; \
     chown -R crafter:crafter /usr/local/tomcat/
 
