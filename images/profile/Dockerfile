@@ -111,6 +111,9 @@ RUN sed -i '/export CATALINA_HOME=$CRAFTER_BIN_DIR\/apache-tomcat/d' ./bin/craft
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
+# Run the application as crafter user
+USER crafter
+
 # Entrypoint and command (run by default)
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
 CMD [ "run" ]

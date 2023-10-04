@@ -33,6 +33,8 @@ VOLUME [ "/opt/crafter/data" ]
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
     usermod -p '*' crafter; \
     chown -R crafter:crafter /opt/crafter/data; \
+    mkdir /opt/crafter/sshd; \
+    chown -R crafter:crafter /opt/crafter/sshd; \
     usermod -s $(command -v git-shell) crafter; \
     usermod -s /sbin/nologin root; \
     sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config; \
@@ -40,7 +42,12 @@ RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config; \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config; \
     echo '' >> /etc/ssh/sshd_config; \
-    echo 'HostKeyAlgorithms ssh-rsa' >> /etc/ssh/sshd_config
+    echo 'HostKeyAlgorithms ssh-rsa' >> /etc/ssh/sshd_config; \
+    echo '' >> /etc/ssh/sshd_config; \
+    echo 'HostKey /opt/crafter/sshd/ssh_host_rsa_key' >> /etc/ssh/sshd_config; \
+    echo 'HostKey /opt/crafter/sshd/ssh_host_dsa_key' >> /etc/ssh/sshd_config; \
+    echo 'HostKey /opt/crafter/sshd/ssh_host_ecdsa_key' >> /etc/ssh/sshd_config; \
+    echo 'HostKey /opt/crafter/sshd/ssh_host_ed25519_key' >> /etc/ssh/sshd_config;
 
 # Copy no-interactive-login file to the crafter's user home and make it executable
 COPY --chown=crafter:crafter no-interactive-login /home/crafter/git-shell-commands/no-interactive-login
@@ -49,6 +56,9 @@ RUN chmod +x /home/crafter/git-shell-commands/no-interactive-login
 # Copy entrypoint script and make it executable
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
+
+# Run the application as crafter user
+USER crafter
 
 # Expose port
 EXPOSE 22

@@ -44,9 +44,9 @@ fi
 export HOME=/home/crafter
 
 if [ "$1" = 'run' ]; then
-    exec gosu crafter $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run
+    $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run
 elif [ "$1" = 'debug' ]; then
-    exec gosu crafter $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda run
+    $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda run
 else
     exec "$@"
 fi
