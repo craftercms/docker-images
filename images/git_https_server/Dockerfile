@@ -43,7 +43,7 @@ COPY ./conf ./conf/
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
-RUN chown -R crafter:crafter /opt/crafter/;
+RUN chown -R crafter:crafter /opt/crafter/apache2/;
 
 # Run the application as crafter user
 USER crafter
