@@ -11,7 +11,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM alpine:3.16 as main
+FROM alpine:3.16 AS main
+
+ENV SSHD_HOME='/home/crafter/sshd'
 
 # Update & Upgrade existing packages
 RUN apk update && apk upgrade
@@ -33,8 +35,8 @@ VOLUME [ "/opt/crafter/data" ]
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
     usermod -p '*' crafter; \
     chown -R crafter:crafter /opt/crafter/data; \
-    mkdir /opt/crafter/sshd; \
-    chown -R crafter:crafter /opt/crafter/sshd; \
+    mkdir $SSHD_HOME; \
+    chown -R crafter:crafter $SSHD_HOME; \
     usermod -s $(command -v git-shell) crafter; \
     usermod -s /sbin/nologin root; \
     sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config; \
@@ -44,10 +46,10 @@ RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
     echo '' >> /etc/ssh/sshd_config; \
     echo 'HostKeyAlgorithms ssh-rsa' >> /etc/ssh/sshd_config; \
     echo '' >> /etc/ssh/sshd_config; \
-    echo 'HostKey /opt/crafter/sshd/ssh_host_rsa_key' >> /etc/ssh/sshd_config; \
-    echo 'HostKey /opt/crafter/sshd/ssh_host_dsa_key' >> /etc/ssh/sshd_config; \
-    echo 'HostKey /opt/crafter/sshd/ssh_host_ecdsa_key' >> /etc/ssh/sshd_config; \
-    echo 'HostKey /opt/crafter/sshd/ssh_host_ed25519_key' >> /etc/ssh/sshd_config;
+    echo "HostKey $SSHD_HOME/ssh_host_rsa_key" >> /etc/ssh/sshd_config; \
+    echo "HostKey $SSHD_HOME/ssh_host_dsa_key" >> /etc/ssh/sshd_config; \
+    echo "HostKey $SSHD_HOME/ssh_host_ecdsa_key" >> /etc/ssh/sshd_config; \
+    echo "HostKey $SSHD_HOME/ssh_host_ed25519_key" >> /etc/ssh/sshd_config;
 
 # Copy no-interactive-login file to the crafter's user home and make it executable
 COPY --chown=crafter:crafter no-interactive-login /home/crafter/git-shell-commands/no-interactive-login
