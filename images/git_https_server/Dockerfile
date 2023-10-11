@@ -13,6 +13,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 FROM httpd:2.4-alpine3.16
 
+ENV APACHE_HOME='/home/crafter/apache2'
+
 # Update & Upgrade existing packages
 RUN apk update && apk upgrade
 
@@ -20,7 +22,8 @@ RUN apk update && apk upgrade
 RUN apk add --no-cache bash shadow git git-daemon su-exec vim nano
 
 # Create folders for crafter user
-RUN mkdir -p /opt/crafter/data
+RUN mkdir -p /opt/crafter/data; \
+    mkdir -p $APACHE_HOME/logs;
 
 # Create volumes
 VOLUME [ "/opt/crafter/data" ]
@@ -31,7 +34,7 @@ RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
 
 # Set default values for env variables
 ENV GIT_REPOS_ROOT=/opt/crafter/data/repos
-ENV PASSWD_FILE_PATH="/usr/local/apache2/.htpasswd"
+ENV PASSWD_FILE_PATH="$APACHE_HOME/.htpasswd"
 ENV SSL_CERT_FILE_PATH="/usr/local/apache2/conf/server.crt"
 ENV SSL_PRIV_KEY_FILE_PATH="/usr/local/apache2/conf/server.key"
 
@@ -41,6 +44,11 @@ COPY ./conf ./conf/
 # Copy entrypoint script and make it executable
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
+
+RUN chown -R crafter:crafter $APACHE_HOME/;
+
+# Run the application as crafter user
+USER crafter
 
 # Expose HTTPS port
 EXPOSE 443
