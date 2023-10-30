@@ -64,7 +64,7 @@
 
 # Quick reference (cont.)
 
-* Documentation: [Crafter CMS Document](https://docs.craftercms.org/en/index.html)
+* Documentation: [Crafter CMS Document](https://docs.craftercms.org)
 
 * Docker images source code: [craftercms/docker-images](https://github.com/craftercms/docker-images)
 
@@ -78,13 +78,13 @@
 
 # What is delivery_tomcat?
 
-`delivery_tomcat` is the Tomcat server component of the Crafter CMS Delivery module, which includes the Crafter Engine Server webapp. Refer to [Crafter CMS Architecture](https://docs.craftercms.org/en/3.1/developers/architecture.html) to learn more.
+`delivery_tomcat` is the Tomcat server component of the Crafter CMS Delivery module, which includes the Crafter Engine Server webapp. Refer to [Crafter CMS Architecture](https://docs.craftercms.org/current/by-role/architect/index.html) to learn more.
 
 # How to use this image
 
-* [Getting start with Crafter CMS](https://docs.craftercms.org/en/3.1/getting-started/index.html)
+* [Getting start with Crafter CMS](https://docs.craftercms.org/current/getting-started/index.html)
 
-* [Running Crafter CMS in a Docker Container](https://docs.craftercms.org/en/3.1/getting-started/quick-start-guide.html#running-crafter-cms-in-a-docker-container)
+* [Running Crafter CMS in a Docker Container](https://docs.craftercms.org/current/getting-started/index.html#run-craftercms-in-docker)
 
 # Image Variants
 
