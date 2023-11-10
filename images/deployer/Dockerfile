@@ -21,7 +21,7 @@ RUN set -eux; \
     apk --no-cache add curl; \
     apk add --no-cache openssh-client; \
     apk add --no-cache git; \
-    apk add --no-cache vim; \
+#    apk add --no-cache vim; \
     apk add --no-cache nano;
 
 # Install gosu

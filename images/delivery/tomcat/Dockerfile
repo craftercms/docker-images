@@ -52,7 +52,7 @@ RUN set -eux; \
     apk add --no-cache lsof; \
     apk add --no-cache openssh-client; \
     apk add --no-cache git; \
-    apk add --no-cache vim; \
+#    apk add --no-cache vim; \
     apk add --no-cache nano;
 
 # Install gosu

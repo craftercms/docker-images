@@ -55,7 +55,7 @@ RUN set -eux; \
     apk add --no-cache rsync; \
     apk add --no-cache iproute2; \
     apk add --no-cache procps; \
-    apk add --no-cache vim; \
+#    apk add --no-cache vim; \
     apk add --no-cache nano;
 
 # Install gosu
