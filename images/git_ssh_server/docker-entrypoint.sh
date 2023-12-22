@@ -16,7 +16,7 @@
 
 chown_dir() {
   local dir="$1"
-  owner=$(stat --format '%U:%G' "$dir")
+  owner=$(stat -c "%U:%G" "$dir")
   if [ "$owner" != "crafter:crafter" ]; then
     echo "The owner of $dir is $owner. Changing to crafter:crafter"
     chown -R crafter:crafter "$dir"
