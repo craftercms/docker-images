@@ -25,7 +25,7 @@ RUN set -eux; \
     apk add --no-cache nano;
 
 # Install gosu
-ENV GOSU_VERSION 1.16
+ENV GOSU_VERSION 1.17
 RUN set -eux; \
     apk add --no-cache --virtual .fetch-deps dpkg gnupg; \
     dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \

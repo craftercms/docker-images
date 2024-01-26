@@ -16,7 +16,7 @@ FROM eclipse-temurin:17-jdk-alpine AS main
 ############# INSTALL NATIVE TOMCAT #############
 ENV CATALINA_HOME=/usr/local/tomcat \
     TOMCAT_MAJOR="9" \
-    TOMCAT_VERSION="9.0.83"
+    TOMCAT_VERSION="9.0.85"
 
 # Download Tomcat, and then Build tc-native
 RUN apk add --no-cache --virtual .my-build-deps apr-dev openssl-dev make g++ && \
@@ -56,7 +56,7 @@ RUN set -eux; \
     apk add --no-cache nano;
 
 # Install gosu
-ENV GOSU_VERSION 1.16
+ENV GOSU_VERSION 1.17
 RUN set -eux; \
     apk add --no-cache --virtual .fetch-deps dpkg gnupg; \
     dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
