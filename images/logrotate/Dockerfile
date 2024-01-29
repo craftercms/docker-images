@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -11,7 +11,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM alpine:3.16 as main
+FROM alpine:3.19 as main
 
 # Add default variables. Default cron runs the logrotate every hour.
 ENV CRON_SCHEDULE='0 * * * *' \
