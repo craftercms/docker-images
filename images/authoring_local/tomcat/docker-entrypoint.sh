@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -16,7 +16,7 @@
 
 chown_dir() {
   local dir="$1"
-  owner=$(stat --format '%U:%G' "$dir")
+  owner=$(stat -c "%U:%G" "$dir")
   if [ "$owner" != "crafter:crafter" ]; then
     echo "The owner of $dir is $owner. Changing to crafter:crafter"
     chown -R crafter:crafter "$dir"
@@ -33,6 +33,10 @@ host_keyscan() {
     IFS=',' read -ra LIST <<< "$DOMAINS"
 
     known_hosts_file="${CRAFTER_SSH_CONFIG}/known_hosts"
+    if [ ! -f $known_hosts_file ]; then
+        touch $known_hosts_file
+    fi
+    chown_dir "$known_hosts_file"
 
     for domain in "${LIST[@]}"; do
         host_keys=$(ssh-keygen -F "$domain" -f "$known_hosts_file")
