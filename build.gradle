@@ -129,6 +129,18 @@ task downloadDeliveryBundle(type: Download) {
     dest deliveryBundleFile
 }
 
+task downloadLibSsl(type: Download) {
+    src 'https://downloads.craftercms.org/misc/libssl.so.1.1'
+    overwrite false
+    dest "${libDir}/libssl.so.1.1"
+}
+
+task downloadLibCrypto(type: Download) {
+    src 'https://downloads.craftercms.org/misc/libcrypto.so.1.1'
+    overwrite false
+    dest "${libDir}/libcrypto.so.1.1"
+}
+
 task expandAuthoringBundle(type: Copy) {
     mustRunAfter downloadAuthoringBundle
     from tarTree(authoringBundleFile)
@@ -142,6 +154,8 @@ task expandDeliveryBundle(type: Copy) {
 }
 
 task prepareAuthoringBundle() {
+    dependsOn downloadLibSsl
+    dependsOn downloadLibCrypto
     if (!file(authoringBundleRoot).exists()) {
         if (authoringBundleUrl) {
             dependsOn downloadAuthoringBundle
