@@ -85,7 +85,6 @@ RUN apk add --update --no-cache -t .mariadb-run-deps \
         linux-pam \
         make \
         pcre \
-        openssl \
         pwgen \
         sudo \
         tzdata \
