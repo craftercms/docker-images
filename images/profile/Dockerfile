@@ -43,6 +43,7 @@ RUN apk add --no-cache --virtual .my-build-deps apr-dev openssl-dev make g++ && 
 RUN set -eux; \
     apk update; \
     apk upgrade; \
+    apk add --no-cache bash; \
 #    apk add --no-cache vim; \
     apk add --no-cache nano;
 
