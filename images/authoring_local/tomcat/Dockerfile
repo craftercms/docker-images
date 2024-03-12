@@ -16,7 +16,7 @@ FROM eclipse-temurin:17-jdk-alpine AS main
 ############# INSTALL NATIVE TOMCAT #############
 ENV CATALINA_HOME=/usr/local/tomcat \
     TOMCAT_MAJOR="9" \
-    TOMCAT_VERSION="9.0.80"
+    TOMCAT_VERSION="9.0.85"
 
 # Download Tomcat, and then Build tc-native
 RUN apk add --no-cache --virtual .my-build-deps apr-dev openssl-dev make g++ && \
@@ -55,11 +55,11 @@ RUN set -eux; \
     apk add --no-cache rsync; \
     apk add --no-cache iproute2; \
     apk add --no-cache procps; \
-    apk add --no-cache vim; \
+#    apk add --no-cache vim; \
     apk add --no-cache nano;
 
 # Install gosu
-ENV GOSU_VERSION 1.16
+ENV GOSU_VERSION 1.17
 RUN set -eux; \
     apk add --no-cache --virtual .fetch-deps dpkg gnupg; \
     dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
@@ -85,13 +85,12 @@ RUN apk add --update --no-cache -t .mariadb-run-deps \
         linux-pam \
         make \
         pcre \
-        libssl1.1 \
-        libcrypto1.1 \
         pwgen \
         sudo \
         tzdata \
         xz-libs \
         zlib;
+COPY ./mariadb-lib-deps/* /usr/lib/
 
 # Create folders and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
