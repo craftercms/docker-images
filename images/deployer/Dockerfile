@@ -21,11 +21,11 @@ RUN set -eux; \
     apk --no-cache add curl; \
     apk add --no-cache openssh-client; \
     apk add --no-cache git; \
-    apk add --no-cache vim; \
+#    apk add --no-cache vim; \
     apk add --no-cache nano;
 
 # Install gosu
-ENV GOSU_VERSION 1.16
+ENV GOSU_VERSION 1.17
 RUN set -eux; \
     apk add --no-cache --virtual .fetch-deps dpkg gnupg; \
     dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
