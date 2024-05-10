@@ -90,7 +90,6 @@ RUN apk add --update --no-cache -t .mariadb-run-deps \
         tzdata \
         xz-libs \
         zlib;
-COPY ./mariadb-lib-deps/* /usr/lib/
 
 # Create folders and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
