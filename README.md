@@ -1,6 +1,6 @@
 # CrafterCMS Docker Images
 
-This project is being retired. We're retiring that repository. Prebuilt CrafterCMS Docker Images are available on [Docker Hub](https://hub.docker.com/search?q=craftercms). To manually build your own, use the main project [CrafterCMS](https://github.com/craftercms/craftercms). For instructions, see the [README](https://github.com/craftercms/craftercms/blob/develop/README.md).
+This project is being retired. Prebuilt CrafterCMS Docker Images are available on [Docker Hub](https://hub.docker.com/search?q=craftercms). To manually build your own, use the main project [CrafterCMS](https://github.com/craftercms/craftercms). For instructions, see the [README](https://github.com/craftercms/craftercms/blob/develop/README.md).
 
 For example, to build Docker Images for v4.1.5, you can do this:
 ```
